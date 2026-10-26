@@ -1,26 +1,31 @@
 # Configuration
 
-PMB works well with no configuration. Every setting has a sensible, ablation
+Lume works well with no configuration. Every setting has a sensible, ablation
 tuned default. This page lists the knobs you are most likely to touch. For the
-full set, including the advanced "pro" knobs, run `pmb config list --pro`.
+full set, including the advanced "pro" knobs, run `lume config list --pro`.
 
 ## How configuration works
 
 Settings resolve in this order, first match wins:
 
 1. a per call override (passed in code or by a tool),
-2. the workspace config (`~/.pmb/workspaces/<name>/config.yaml`),
-3. the global config (`~/.pmb/config.yaml`),
+2. the workspace config (`~/.lume/workspaces/<name>/config.yaml`),
+3. the global config (`~/.lume/config.yaml`),
 4. the built in schema default.
+
+Lume uses `LUME_HOME` and `~/.lume` by default. Existing `PMB_*` environment
+variables and `~/.pmb` data remain supported; when `~/.lume` is absent, Lume
+continues using the existing `~/.pmb` directory. Run `lume migrate-home` to
+copy that data to `~/.lume`; the original directory is retained as a backup.
 
 View and change settings:
 
 ```bash
-pmb config list             # the common keys, with value, source, and default
-pmb config list --pro       # everything, including advanced knobs
-pmb config get <key>        # one value
-pmb config set <key> <value>   # write to the global config
-pmb config set <key> <val>  # or the dashboard Settings tab
+lume config list             # the common keys, with value, source, and default
+lume config list --pro       # everything, including advanced knobs
+lume config get <key>        # one value
+lume config set <key> <value>   # write to the global config
+lume config set <key> <val>  # or the dashboard Settings tab
 ```
 
 A value set globally applies to every workspace, which is what the daemon and
@@ -30,10 +35,10 @@ each agent read.
 
 | Key | Default | What it does |
 |---|---|---|
-| `embedding.model` | multilingual MiniLM | the embedder that turns text into vectors. Change it with `pmb model`, which also re-embeds your memory. |
+| `embedding.model` | multilingual MiniLM | the embedder that turns text into vectors. Change it with `lume model`, which also re-embeds your memory. |
 | `embedding.backend` | sentence-transformers | the embedding backend. |
 
-Switching the model by hand needs a reindex, so prefer `pmb model <light\|balanced\|best>`, which downloads, re-embeds, and restarts the daemon in one step.
+Switching the model by hand needs a reindex, so prefer `lume model <light\|balanced\|best>`, which downloads, re-embeds, and restarts the daemon in one step.
 
 ## Recall quality
 
@@ -70,7 +75,7 @@ fade out of ranking; retire one with `archive`/`forget`.
 
 | Key | Default | What it does |
 |---|---|---|
-| `connect.default_daemon` | true | `pmb connect` and `pmb setup` point JSON hosts at the one shared daemon instead of a per client server. |
+| `connect.default_daemon` | true | `lume connect` and `lume setup` point JSON hosts at the one shared daemon instead of a per client server. |
 | `daemon.autostart` | true | when a cold hook runs and no daemon is live, start one in the background for the next message. |
 | `daemon.idle_exit_min` | 120 | exit after this many idle minutes so a forgotten daemon does not hold memory forever. 0 means never. Connecting pins this to 0 so the connection stays warm. |
 | `daemon.tool_profile` | (set by connect) | the MCP tool profile the daemon serves: minimal, lean, default, or full. |
@@ -87,7 +92,7 @@ fade out of ranking; retire one with `archive`/`forget`.
 
 | Key | Default | What it does |
 |---|---|---|
-| `agent.active_mode` | false | install proactive logging rules by default (the agent records its own decisions and lessons). Turned on by `pmb setup --active`. |
+| `agent.active_mode` | false | deliver proactive logging instructions from the server to MCP clients on connect/reconnect; also enables them by default for local `lume connect` / `lume setup`. |
 | `agent.log_decisions` / `log_completed` / `log_lessons` / `log_failures` / `log_goals` | true | which categories the agent logs in active mode. |
 | `agent.apply_lessons` | true | the self improvement loop: recall lessons at the start of a task and follow them. |
 | `agent.context_continuity` | true | re-orient after a long session with `session_brief`. |
@@ -98,14 +103,14 @@ fade out of ranking; retire one with `archive`/`forget`.
 |---|---|---|
 | `consolidate.auto_trigger` | false | run sleep stage consolidation automatically. |
 | `consolidate.backend` | auto (pro) | background LLM tier: auto, claude, anthropic, openai, or ollama. Background only, never on the read path. |
-| `decay.factor_per_day` | 0.985 | the forgetting curve applied by `pmb decay`. |
+| `decay.factor_per_day` | 0.985 | the forgetting curve applied by `lume decay`. |
 | `dedup.enable` | true | deduplicate near identical memories. |
 | `graph.extractor` | regex | how entities are pulled from text for the graph. |
 
 ## See everything
 
 ```bash
-pmb config list --pro
+lume config list --pro
 ```
 
 There are around 150 advanced knobs. They are advanced on purpose: the defaults

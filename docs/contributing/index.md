@@ -1,6 +1,6 @@
 # Contributing
 
-PMB is easiest to improve when changes stay small, documented, and covered by
+Lume is easiest to improve when changes stay small, documented, and covered by
 the relevant checks.
 
 ``` mermaid
@@ -15,7 +15,7 @@ flowchart LR
 
 -   **Adding a language**
 
-    Extend PMB language packs with examples and tests.
+    Extend Lume language packs with examples and tests.
 
     [Language guide →](adding-a-language.md)
 

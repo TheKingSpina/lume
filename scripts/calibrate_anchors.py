@@ -313,7 +313,7 @@ def main(argv: list[str]) -> int:
         "macro": {"recall": round(macro_recall, 4), "fpr": round(macro_fpr, 4)},
         "sets": sets_out,
     }
-    out = Path(__file__).resolve().parents[1] / "src" / "pmb" / "lang" / \
+    out = Path(__file__).resolve().parents[1] / "src" / "lume" / "lang" / \
         "anchor_calibration.json"
     if dry:
         print(f"\n[calibrate] --dry-run: NOT writing {out}")

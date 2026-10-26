@@ -7,11 +7,10 @@ from contextlib import closing
 from pathlib import Path
 
 import pytest
-from typer.testing import CliRunner
-
 from pmb.cli.main import app
 from pmb.core.snapshots import create_snapshot, restore_snapshot, snapshot_path, verify_snapshot
 from pmb.core.workspace import Workspace
+from typer.testing import CliRunner
 
 
 @pytest.fixture
@@ -115,7 +114,7 @@ def test_snapshot_cli_json_verify_and_running_server_guard(workspace, monkeypatc
     monkeypatch.setattr("pmb.mcp.registry.list_servers", lambda **kwargs: [{"alive": True}])
     result = runner.invoke(app, ["snapshot", "restore", entry["id"], "--yes"])
     assert result.exit_code == 1
-    assert "Stop running PMB servers" in result.stdout
+    assert "Stop running Lume servers" in result.stdout
 
 
 def test_snapshot_rejects_symlink_content(workspace, tmp_path):

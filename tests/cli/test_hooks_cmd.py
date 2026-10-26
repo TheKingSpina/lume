@@ -22,10 +22,10 @@ def test_hook_entry_prefers_signed_python_over_unsigned_shim(monkeypatch):
     the bare console-script when python's own path has spaces."""
     import pmb.cli.hooks as H
     monkeypatch.setattr(H.sys, "executable", r"C:\Py\Python312\python.exe")
-    assert H._pmb_hook_entry() == r"C:\Py\Python312\python.exe -m pmb.hookclient"
+    assert H._pmb_hook_entry() == r"C:\Py\Python312\python.exe -m lume.hookclient"
     # a python path WITH spaces can't be used unquoted cross-shell → fall back
     monkeypatch.setattr(H.sys, "executable", r"C:\Program Files\Py\python.exe")
-    assert H._pmb_hook_entry() == "pmb-hook"
+    assert H._pmb_hook_entry() == "lume-hook"
 
 
 def test_hook_commands_have_no_leading_quote():

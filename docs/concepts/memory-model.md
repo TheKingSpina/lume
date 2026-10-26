@@ -1,6 +1,6 @@
 # Memory model
 
-This page describes what PMB stores, the kinds of memory it keeps, and how
+This page describes what Lume stores, the kinds of memory it keeps, and how
 memories age. For where these live on disk and how they are indexed, see
 [Core engine](core-engine.md).
 
@@ -13,7 +13,7 @@ purges (hard delete). That keeps history honest and recovery easy.
 
 ## Types of memory
 
-PMB separates memory by type so the agent can treat each kind with the right
+Lume separates memory by type so the agent can treat each kind with the right
 weight. The common types:
 
 | Type | What it is | Where it comes from |
@@ -21,12 +21,12 @@ weight. The common types:
 | `fact` | An atomic, durable fact | `record_fact`, `record_batch` |
 | `keyed_fact` | A mutable personal attribute, stored as subject / attribute / value | `record_keyed_fact` |
 | `decision` | A project-shaping choice (an activity that lands in long-term memory) | `record_batch` activity `kind=decision` |
-| `lesson` | A procedural rule that surfaces before relevant work | `pmb learn`, `record_batch` |
+| `lesson` | A procedural rule that surfaces before relevant work | `lume learn`, `record_batch` |
 | `goal` | A future intention with a status | `record_goal` |
 | `activity` | A lightweight log of what happened in a turn | `record_activity` |
 | `milestone` | A checkpoint in a named state-chain | `record_milestone` |
 | `qa` | A stored question and answer pair | `remember` |
-| `git`, `file`, `code` | Repository and code context | `pmb sync`, `index_project` |
+| `git`, `file`, `code` | Repository and code context | `lume sync`, `index_project` |
 | `image` | An image with an optional cross-modal embedding | `record_image` |
 
 ## Facts that change: keyed facts
@@ -52,11 +52,11 @@ matter.
   never auto-archived.
 - **Forgetting curve.** A daily decay lowers importance over time, and an old,
   low-importance memory is eventually archived. Pinned memories are exempt. Tune
-  it with `decay.factor_per_day`, or run `pmb decay` by hand.
+  it with `decay.factor_per_day`, or run `lume decay` by hand.
 
 ## Three tiers: how fast memory fades
 
-PMB keeps every event in one of three tiers that differ only in how fast they
+Lume keeps every event in one of three tiers that differ only in how fast they
 fade. Recalling a memory promotes it toward a slower-fading tier, so what you use
 sticks and what you never touch decays.
 

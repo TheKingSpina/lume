@@ -1,12 +1,12 @@
 # Team and remote
 
-> **You don't need this for local use.** The default `pmb connect <agent>`
-> keeps PMB local. Supported local clients use one warm daemon on
+> **You don't need this for local use.** The default `lume connect <agent>`
+> keeps Lume local. Supported local clients use one warm daemon on
 > `127.0.0.1`; stdio-only clients such as Codex reach it through
-> `pmb mcp proxy`. This page is only for sharing one memory across several
+> `lume mcp proxy`. This page is only for sharing one memory across several
 > machines or people.
 
-PMB's memory is a SQLite file plus a vector index. By default it lives next
+Lume's memory is a SQLite file plus a vector index. By default it lives next
 to you and only your local agent talks to it. If you want **one shared
 memory** - a team on the same workspace, or your own laptop + desktop -
 you run the MCP server once over HTTP and point every agent at its URL.
@@ -15,9 +15,9 @@ you run the MCP server once over HTTP and point every agent at its URL.
 
 | Mode | Use it when | Transport |
 |---|---|---|
-| Local default | One developer on one machine, even with several agents | Local daemon on `127.0.0.1`; Codex uses `pmb mcp proxy` to bridge stdio to the daemon. |
+| Local default | One developer on one machine, even with several agents | Local daemon on `127.0.0.1`; Codex uses `lume mcp proxy` to bridge stdio to the daemon. |
 | Local stdio fallback | A host cannot use the daemon/proxy path | One MCP server process per client. |
-| Team / multi-machine | Several machines or people need one memory | One `pmb mcp serve` process over streamable HTTP with a bearer token. |
+| Team / multi-machine | Several machines or people need one memory | One `lume mcp serve` process over streamable HTTP with a bearer token. |
 
 ## When you'd want it
 
@@ -35,14 +35,14 @@ One persistent process, living next to the SQLite file (a homelab box, a
 Tailscale node, a small VM):
 
 ```bash
-pmb mcp serve --transport streamable-http --host 0.0.0.0 --port 8765 \
+lume mcp serve --transport streamable-http --host 0.0.0.0 --port 8765 \
               --bearer-token "$(openssl rand -hex 32)"
 ```
 
 Then on each developer's machine:
 
 ```bash
-pmb connect claude-code --remote http://memo.local:8765/mcp \
+lume connect claude-code --remote http://memo.local:8765/mcp \
                         --bearer-token <same secret>
 ```
 
@@ -50,7 +50,7 @@ Same MCP, same tools, one shared memory.
 
 ## Why the bearer token is required
 
-Over local stdio there is no network surface. Over the local daemon, PMB keeps
+Over local stdio there is no network surface. Over the local daemon, Lume keeps
 the server bound to `127.0.0.1` and uses its own local token/proxy wiring.
 
 Over **HTTP** the moment you open a port, anyone who can reach it can read
@@ -58,26 +58,26 @@ and write your memory. The bearer token is the only thing separating "my
 agent" from "a random host on the network / mesh". So in HTTP mode it isn't
 optional hardening - it's the boundary.
 
-PMB does a constant-time comparison (`hmac.compare_digest`) so a leaked log
+Lume does a constant-time comparison (`hmac.compare_digest`) so a leaked log
 line can't side-channel a partial match. CORS preflights (`OPTIONS`) and the
 health endpoint (`/healthz`, `/`) pass through unauthenticated; everything
 else needs `Authorization: Bearer <token>`.
 
 ## Config via environment
 
-`pmb mcp serve` sets these env vars before handing off to the MCP server. If
-you run `pmb-mcp` directly from a systemd unit or Docker image, set them
+`lume mcp serve` sets these env vars before handing off to the MCP server. If
+you run `lume-mcp` directly from a systemd unit or Docker image, set them
 yourself:
 
 | Env | Default | Meaning |
 |---|---|---|
-| `PMB_MCP_TRANSPORT` | `stdio` in `pmb-mcp`; `pmb mcp serve` sets `streamable-http` by default | `streamable-http` for the shared server |
-| `PMB_MCP_HOST` | `127.0.0.1` | `0.0.0.0` to accept LAN / mesh |
-| `PMB_MCP_PORT` | `8765` | bind port (don't collide with `pmb dashboard`) |
-| `PMB_MCP_PATH` | `/mcp` | mount path |
-| `PMB_MCP_BEARER_TOKEN` | _(empty)_ | shared secret; empty = unauthenticated |
+| `LUME_MCP_TRANSPORT` | `stdio` in `lume-mcp`; `lume mcp serve` sets `streamable-http` by default | `streamable-http` for the shared server |
+| `LUME_MCP_HOST` | `127.0.0.1` | `0.0.0.0` to accept LAN / mesh |
+| `LUME_MCP_PORT` | `8765` | bind port (don't collide with `lume dashboard`) |
+| `LUME_MCP_PATH` | `/mcp` | mount path |
+| `LUME_MCP_BEARER_TOKEN` | _(empty)_ | shared secret; empty = unauthenticated |
 
-> Heads-up: `pmb dashboard` also defaults to port 8765. If you run both on
+> Heads-up: `lume dashboard` also defaults to port 8765. If you run both on
 > one host, give one of them a different port.
 
 ## Tests

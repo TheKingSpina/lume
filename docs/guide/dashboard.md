@@ -1,19 +1,19 @@
 # Dashboard
 
-`pmb dashboard` opens a local web UI for browsing your memory. It is read mostly,
+`lume dashboard` opens a local web UI for browsing your memory. It is read mostly,
 runs on your machine, and binds to `127.0.0.1` only, so nothing is exposed to the
 network.
 
 ## Launch
 
 ```bash
-pmb dashboard                 # opens on http://127.0.0.1:8765, or the next free port
-pmb dashboard --port 18888    # use another port
+lume dashboard                 # opens on http://127.0.0.1:8765, or the next free port
+lume dashboard --port 18888    # use another port
 ```
 
 The default port is 8765, which is also the default for the shared daemon. If
-you run both at once, `pmb dashboard` automatically moves to the next available
-port. If you pass `--port`, PMB treats that as an explicit choice and prints a
+you run both at once, `lume dashboard` automatically moves to the next available
+port. If you pass `--port`, Lume treats that as an explicit choice and prints a
 short diagnostic if the OS refuses the bind.
 
 ## Tabs
@@ -37,7 +37,7 @@ short diagnostic if the OS refuses the bind.
 Click any memory to open its detail panel. At the bottom you have:
 
 - **Pin**: keep it at maximum importance, protected from automatic cleanup.
-- **Archive**: hide it reversibly. Restore it later with `pmb restore`.
+- **Archive**: hide it reversibly. Restore it later with `lume restore`.
 - **Delete** (the red button): remove it permanently, with a confirmation first.
 
 After you act, the panel closes and the current view refreshes. For the full

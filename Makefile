@@ -1,4 +1,4 @@
-.PHONY: help install dev test test-all test-core test-smoke test-all-WARN lint format clean bench bench-quick dashboard docker-build docker-shell docker-dashboard docker-mcp docker-test docker-bench-data docker-bench-write docker-bench-locomo docker-stop docker-restart docker-down docker-fix-perms docker-build-gpu docker-shell-gpu docker-dashboard-gpu docker-down-gpu
+.PHONY: help install dev test test-all test-core test-smoke test-all-WARN lint format clean bench bench-quick dashboard docker-build docker-shell docker-dashboard docker-mcp docker-server docker-test docker-bench-data docker-bench-write docker-bench-locomo docker-stop docker-restart docker-down docker-fix-perms docker-build-gpu docker-shell-gpu docker-dashboard-gpu docker-down-gpu
 
 help:
 	@echo "PMB development targets:"
@@ -18,11 +18,12 @@ help:
 	@echo "  make bench-quick    - quick smoke benchmark (3 conversations, ~3 min)"
 	@echo "  make dashboard      - launch web dashboard on :8765"
 	@echo ""
-	@echo "  Containerized mode (does not touch host Python or ~/.pmb):"
-	@echo "  make docker-build     - build the pmb:local image"
+	@echo "  Containerized mode (does not touch host Python or ~/.lume; legacy ~/.pmb):"
+	@echo "  make docker-build     - build the lume:local image"
 	@echo "  make docker-shell     - dev sandbox (pip/python/pytest) in a container"
-	@echo "  make docker-dashboard - web dashboard on :8765 from a container"
+	@echo "  make docker-dashboard - web dashboard on :8766 from a container"
 	@echo "  make docker-mcp       - print the MCP server command for agent config"
+	@echo "  make docker-server    - shared HTTP MCP server on 127.0.0.1:8765"
 	@echo "  make docker-test      - run the core test suite inside the container"
 	@echo "  make docker-bench-data   - download the LoCoMo dataset into scripts/data/"
 	@echo "  make docker-bench-write  - write-path latency benchmark"
@@ -87,7 +88,7 @@ dashboard:
 
 # --------------------------------------------------------------------------
 # Containerized mode. Optional alternative to the host pip install above —
-# everything runs in the pmb:local image with data isolated in ./docker/data.
+# everything runs in the lume:local image with data isolated in ./docker/data.
 # Pass UID/GID so bind-mounted data stays owned by you:
 #   make docker-build UID=$(id -u) GID=$(id -g)
 # --------------------------------------------------------------------------
@@ -97,7 +98,7 @@ export UID
 export GID
 
 # Note: shell/dashboard/test do NOT depend on docker-build. compose builds the
-# image automatically the first time (when pmb:local is missing) and reuses it
+# image automatically the first time (when lume:local is missing) and reuses it
 # afterwards, so these start instantly. Source is bind-mounted + installed
 # editable, so code edits are picked up live with no rebuild. Run
 # `make docker-build` explicitly only to force a rebuild (e.g. after changing
@@ -115,6 +116,10 @@ docker-mcp:
 	@echo "Wire this into your agent's MCP config as the server command:"
 	@echo "  docker compose run --rm -i mcp"
 
+docker-server:
+	docker compose --profile server up -d mcp-http
+	@docker compose port mcp-http 8765
+
 docker-test:
 	docker compose run --rm shell pytest $(CORE_TESTS) -q
 
@@ -128,14 +133,14 @@ docker-bench-locomo: docker-bench-data
 	docker compose run --rm shell python scripts/benchmarks/benchmark_locomo.py --n-conversations 3 --top-k 10
 
 docker-stop:
-	docker compose --profile dev --profile dashboard --profile mcp stop
+	docker compose --profile dev --profile dashboard --profile mcp --profile server stop
 
 # Restart the dashboard without rebuilding. `--no-build` guarantees the
 docker-restart:
 	docker compose --profile dashboard up -d --no-build
 
 docker-down:
-	docker compose --profile dev --profile dashboard --profile mcp down
+	docker compose --profile dev --profile dashboard --profile mcp --profile server down
 
 # Repair ownership of the model-cache volume(s) and ./docker/data to your user.
 docker-fix-perms:
@@ -147,7 +152,7 @@ docker-fix-perms:
 	@echo "perms fixed for UID:GID = $(UID):$(GID)"
 
 # GPU variant (opt-in). Needs an NVIDIA GPU + the NVIDIA Container Toolkit.
-# Builds the CUDA torch image (pmb:gpu) and passes the GPU into the container.
+# Builds the CUDA torch image (lume:gpu) and passes the GPU into the container.
 GPU_COMPOSE = docker compose -f compose.yaml -f docker/compose.gpu.yaml
 
 docker-build-gpu:

@@ -6,7 +6,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from pmb.cli.connect import (
     _load_json,
     _save_json,
@@ -32,13 +31,14 @@ def test_make_remote_entry_shape():
     e = make_remote_entry("alex@server:/srv/repo")
     assert e["command"] == "ssh"
     assert e["args"][0] == "alex@server"
-    assert "PMB_CWD" in e["args"][1]
+    assert "LUME_CWD" in e["args"][1]
     assert "/srv/repo" in e["args"][1]
-    assert "pmb-mcp" in e["args"][1]
+    assert "lume-mcp" in e["args"][1]
 
 
 def test_make_local_entry_uses_pmb_cwd(tmp_cwd):
     e = make_local_entry(tmp_cwd)
+    assert e["env"]["LUME_CWD"] == str(tmp_cwd)
     assert e["env"]["PMB_CWD"] == str(tmp_cwd)
 
 
@@ -82,13 +82,13 @@ def test_load_corrupt_returns_empty(tmp_cwd):
 def test_connect_claude_code_project_writes_local_mcp_json(tmp_cwd):
     res = connect("claude-code", cwd=tmp_cwd, scope="project")
     assert res["agent"] == "claude-code"
-    assert res["entry_name"] == "pmb"
+    assert res["entry_name"] == "lume"
     assert res["action"] == "added"
     mcp = tmp_cwd / ".mcp.json"
     assert mcp.exists()
     data = json.loads(mcp.read_text(encoding="utf-8"))
-    assert "pmb" in data["mcpServers"]
-    assert data["mcpServers"]["pmb"]["env"]["PMB_CWD"] == str(tmp_cwd)
+    assert "lume" in data["mcpServers"]
+    assert data["mcpServers"]["lume"]["env"]["LUME_CWD"] == str(tmp_cwd)
 
 
 def test_connect_preserves_other_entries(tmp_cwd):
@@ -97,7 +97,7 @@ def test_connect_preserves_other_entries(tmp_cwd):
     connect("claude-code", cwd=tmp_cwd, scope="project")
     data = json.loads(mcp.read_text(encoding="utf-8"))
     assert "github" in data["mcpServers"]
-    assert "pmb" in data["mcpServers"]
+    assert "lume" in data["mcpServers"]
 
 
 def test_connect_remote_uses_ssh(tmp_cwd):
@@ -105,7 +105,7 @@ def test_connect_remote_uses_ssh(tmp_cwd):
         "claude-code", cwd=tmp_cwd, scope="project",
         remote="alex@server:/srv/repo",
     )
-    assert res["entry_name"] == "pmb-remote"
+    assert res["entry_name"] == "lume-remote"
     assert res["entry"]["command"] == "ssh"
 
 
@@ -114,7 +114,7 @@ def test_connect_cursor_writes_cursor_dir(tmp_cwd):
     mcp = tmp_cwd / ".cursor" / "mcp.json"
     assert mcp.exists()
     data = json.loads(mcp.read_text(encoding="utf-8"))
-    assert "pmb" in data["mcpServers"]
+    assert "lume" in data["mcpServers"]
 
 
 def test_connect_name_override(tmp_cwd):
@@ -138,7 +138,9 @@ def test_connect_replace_keeps_other_servers(tmp_cwd):
         "mcpServers": {"pmb": {"command": "old"}, "other": {"command": "z"}}
     }), encoding="utf-8")
     res = connect("claude-code", cwd=tmp_cwd, scope="project")
-    assert res["action"] == "replaced"
+    assert res["action"] == "migrated"
     data = json.loads(mcp.read_text(encoding="utf-8"))
     assert "other" in data["mcpServers"]
+    assert "pmb" not in data["mcpServers"]
+    assert "lume" in data["mcpServers"]
     assert data["mcpServers"]["other"]["command"] == "z"

@@ -116,7 +116,7 @@ def _isolate_test_env(monkeypatch):
         (autouse, so it applies regardless of which local tmp_pmb_home fixture a
         test shadows conftest with) makes recall drain inline.
 
-    (2) PMB_* env-leak isolation. Several tests set PMB_WORKSPACE /
+    (2) LUME_* / PMB_* env-leak isolation. Several tests set workspace/profile
         PMB_TOOL_PROFILE via raw `os.environ[...] = ...` (no cleanup), which
         leaks into later tests and makes workspace-detection flaky depending on
         order (e.g. source='env'/'personal' where 'cwd' is expected). Clearing
@@ -130,7 +130,8 @@ def _isolate_test_env(monkeypatch):
         monkeypatch.setattr(SCHEMA["recall.touch_async"], "default", False)
     except Exception:
         pass
-    for _k in ("PMB_WORKSPACE", "PMB_TOOL_PROFILE"):
+    for _k in ("LUME_HOME", "LUME_WORKSPACE", "LUME_TOOL_PROFILE",
+               "PMB_WORKSPACE", "PMB_TOOL_PROFILE"):
         monkeypatch.delenv(_k, raising=False)
     # (3) E1 corpus-stopwords global is process-wide; reset it before every test
     # so a test that enables it can't leak high-DF stopwords into later tests.
@@ -150,6 +151,7 @@ def tmp_pmb_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """
     home = tmp_path / "pmb_home"
     home.mkdir()
+    monkeypatch.setenv("LUME_HOME", str(home))
     monkeypatch.setenv("PMB_HOME", str(home))
     return home
 

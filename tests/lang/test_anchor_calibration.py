@@ -20,7 +20,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 from pmb.lang.anchors import (
     ALL_ANCHORS,
     CALIBRATION_FILE,
@@ -29,7 +28,7 @@ from pmb.lang.anchors import (
 
 _SNAP_PATH = next(
     p for p in Path(__file__).resolve().parents if (p / "pyproject.toml").is_file()
-) / "src" / "pmb" / "lang" / CALIBRATION_FILE
+) / "src" / "lume" / "lang" / CALIBRATION_FILE
 
 
 def _snapshot() -> dict:

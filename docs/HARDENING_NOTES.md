@@ -22,7 +22,7 @@ before changing code.
 
 ## Phase 2 (proposed) - exception-handler audit
 
-Today `src/pmb/` contains **144 bare `except Exception:` blocks across
+Today `src/lume/` contains **144 bare `except Exception:` blocks across
 32 files**. Most of these are deliberate. Some are not. Mass conversion
 would either spam logs or hide the deliberate ones; the right approach
 is a categorised audit before any change.
@@ -76,7 +76,7 @@ trace the call site, and decide.
 
 The grep that produced this inventory:
 ```
-rg "except\s+Exception\s*:\s*$" src/pmb/ --type py -c | sort -t: -k2 -n -r
+rg "except\s+Exception\s*:\s*$" src/lume/ --type py -c | sort -t: -k2 -n -r
 ```
 
 Top three files by count:
@@ -128,7 +128,7 @@ The single biggest user-facing cost was `import lancedb` itself:
 deps). `Engine.__init__` triggered that import via `HybridSearch.__init__`
 even for read-only CLI commands.
 
-Fix landed in `src/pmb/core/search.py`:
+Fix landed in `src/lume/core/search.py`:
 
 - `HybridSearch` no longer connects to LanceDB in `__init__`. The
   connection and table objects are lazy properties (`_table` triggers
@@ -139,7 +139,7 @@ Fix landed in `src/pmb/core/search.py`:
 - New `HybridSearch.is_vector_index_loaded()` mirrors the existing
   `is_ready()` for callers that care about state.
 
-Measured cost of `pmb stats` (read-only CLI):
+Measured cost of `lume stats` (read-only CLI):
 
 | Before | After |
 | ---: | ---: |
@@ -153,7 +153,7 @@ CLI commands that don't touch vectors (`stats`, `list`, `pin`, `forget`,
 ## Findings from `scripts/benchmarks/scenario_test.py`
 
 A scenario-style integration test (`scripts/benchmarks/scenario_test.py`)
-exercises PMB the way a real coding-assistant agent would. **17 of 18
+exercises Lume the way a real coding-assistant agent would. **17 of 18
 queries pass** across 9 scenarios. The two genuine limitations the test
 surfaced:
 
@@ -162,7 +162,7 @@ surfaced:
 When the user asks about a category ("What **database** does Alex prefer?")
 and the answer is an instance ("PostgreSQL"), and other competing facts
 share the surface form ("Alex prefers tea over coffee", "Alex prefers vim
-over emacs", "Alex prefers dark mode over light mode"), PMB **without
+over emacs", "Alex prefers dark mode over light mode"), Lume **without
 reranking** may put one of the surface-form-similar facts at top-1.
 
 - Workaround today: callers should use `top_k=3` and let the agent pick
@@ -177,15 +177,15 @@ reranking** may put one of the surface-form-similar facts at top-1.
 
 ### 2. Agent-side lazy gating (intentional non-feature)
 
-PMB *always* returns top-K for any query. It does **not** detect that
+Lume *always* returns top-K for any query. It does **not** detect that
 "What is a JWT token?" is general knowledge and skip retrieval. That
-decision lives in the agent's system prompt (`pmb connect` injects the
+decision lives in the agent's system prompt (`lume connect` injects the
 canonical rule block).
 
 This is documented in the README ("the lazy-by-default gate lives in
-the agent, not in PMB") - it's not a bug, it's a separation of concerns.
+the agent, not in Lume") - it's not a bug, it's a separation of concerns.
 Custom-agent integrators need to replicate that rule block, or accept
-that PMB will surface stored facts on unrelated questions.
+that Lume will surface stored facts on unrelated questions.
 
 ---
 
@@ -204,7 +204,7 @@ embedding model still takes ~11 s. Where it goes:
 | 100× per-call SQLite connection open/close | ~1.2 s |
 
 The fix would be a `record_batch_bulk(skip_dedup=True, defer_graph=True)`
-mode for bulk imports (`pmb import-jsonl`, LoCoMo ingestion, migration
+mode for bulk imports (`lume import-jsonl`, LoCoMo ingestion, migration
 from another tool). Normal agent traffic (1-20 items per turn) is
 unaffected and already fast.
 
@@ -229,5 +229,5 @@ python scripts/benchmarks/ablation_full.py --n-conversations 3
 
 Check what changed in the SCHEMA defaults since last release:
 ```bash
-git log -p src/pmb/config.py
+git log -p src/lume/config.py
 ```

@@ -3,8 +3,8 @@
 Every command supports `--help` for its full flag list:
 
 ```bash
-pmb <command> --help          # e.g. pmb recall --help
-pmb connect --help
+lume <command> --help          # e.g. lume recall --help
+lume connect --help
 ```
 
 Every command is **fully offline** unless tagged
@@ -22,27 +22,27 @@ Nothing leaves your machine except the workspace-sync commands you run on purpos
 
 | Command | What it does |
 |---|---|
-| `pmb setup [agent]` | **Recommended one-command setup.** Detect your agent, pick the memory model, wire MCP + rules + hooks, warm the engine, and start the shared daemon - in one guided flow. Omit `agent` to auto-detect. |
-| `pmb setup --all` | Wire **every detected agent** at once (Claude Code + Codex + Cursor + …), all sharing the one warm daemon. |
-| `pmb connect <agent>` | Wire PMB into an agent's MCP config + install its rules. Agents: `claude-code`, `cursor`, `codex`, `windsurf`, `gemini`, `vscode`, `zed`, `opencode`, `continue`. Points at the shared daemon by default (codex via the `pmb mcp proxy` bridge); `--stdio` keeps a per-client server. |
-| `pmb connect <agent> --active` | Same, but installs **proactive-logging** rules: the agent records its own decisions / lessons / what it did during coding, without waiting for "remember". Recall stays lazy. |
-| `pmb connect --list` | Show every supported agent and where its config lives. |
-| `pmb connect <agent> --workspace NAME` | Point several agents at **one shared** workspace. |
-| `pmb connect <agent> --probe` | After wiring, spawn `pmb-mcp` briefly to confirm it starts. |
-| `pmb model [light\|balanced\|best]` | Switch the embedding model later: download + re-embed memory + restart the daemon in one step. Omit the arg for the interactive menu. |
-| `pmb daemon start\|stop\|status\|restart` | Manage the ONE warm daemon (Engine + model + LanceDB) that N clients share for instant recall. |
-| `pmb daemon kill-all` | Stop the daemon AND kill every registered PMB process, then clear the registry - the reset when stray/duplicate warm processes pile up. |
-| `pmb mcp serve` / `pmb mcp status` | Run a shared HTTP MCP server (team mode) / list running PMB servers + their RAM. |
-| `pmb mcp proxy` | (Advanced; auto-wired for codex.) Lightweight stdio↔daemon bridge so a stdio-only host shares the warm daemon instead of loading its own model. |
-| `pmb doctor` | Diagnose the install + runtime state. `--remote user@host:/path` prints an SSH-tunneled MCP snippet. |
-| `pmb warmup` | Pre-load the model + BM25 + LanceDB so the next recall is fast (avoids the ~1-2 s cold start). |
-| `pmb init [--name NAME]` | Initialize a workspace in the current directory (optional - a workspace auto-detects from cwd). |
+| `lume setup [agent]` | **Recommended one-command setup.** Detect your agent, pick the memory model, wire MCP + rules + hooks, warm the engine, and start the shared daemon - in one guided flow. Omit `agent` to auto-detect. |
+| `lume setup --all` | Wire **every detected agent** at once (Claude Code + Codex + Cursor + …), all sharing the one warm daemon. |
+| `lume connect <agent>` | Wire Lume into an agent's MCP config + install its rules. Agents: `claude-code`, `cursor`, `codex`, `windsurf`, `gemini`, `vscode`, `zed`, `opencode`, `continue`. Points at the shared daemon by default (codex via the `lume mcp proxy` bridge); `--stdio` keeps a per-client server. |
+| `lume connect <agent> --active` | Same, but installs **proactive-logging** rules: the agent records its own decisions / lessons / what it did during coding, without waiting for "remember". Recall stays lazy. |
+| `lume connect --list` | Show every supported agent and where its config lives. |
+| `lume connect <agent> --workspace NAME` | Point several agents at **one shared** workspace. |
+| `lume connect <agent> --probe` | After wiring, spawn `lume-mcp` briefly to confirm it starts. |
+| `lume model [light\|balanced\|best]` | Switch the embedding model later: download + re-embed memory + restart the daemon in one step. Omit the arg for the interactive menu. |
+| `lume daemon start\|stop\|status\|restart` | Manage the ONE warm daemon (Engine + model + LanceDB) that N clients share for instant recall. |
+| `lume daemon kill-all` | Stop the daemon AND kill every registered Lume process, then clear the registry - the reset when stray/duplicate warm processes pile up. |
+| `lume mcp serve` / `lume mcp status` | Run a shared HTTP MCP server (team mode) / list running Lume servers + their RAM. |
+| `lume mcp proxy` | (Advanced; auto-wired for codex.) Lightweight stdio↔daemon bridge so a stdio-only host shares the warm daemon instead of loading its own model. |
+| `lume doctor` | Diagnose the install + runtime state. `--remote user@host:/path` prints an SSH-tunneled MCP snippet. |
+| `lume warmup` | Pre-load the model + BM25 + LanceDB so the next recall is fast (avoids the ~1-2 s cold start). |
+| `lume init [--name NAME]` | Initialize a workspace in the current directory (optional - a workspace auto-detects from cwd). |
 
 ```bash
 pip install pmb-ai      # or: npx pmb-ai  (then the command is `pmb-ai`)
-pmb setup               # guided: detect agent, pick model, wire + warm + daemon
+lume setup               # guided: detect agent, pick model, wire + warm + daemon
 # or wire everything you have at once (one shared warm daemon):
-pmb setup --all
+lume setup --all
 # restart the agent
 ```
 
@@ -52,17 +52,17 @@ pmb setup --all
 
 | Command | What it does |
 |---|---|
-| `pmb note "..."` | Jot a memory from the terminal. `--pin` to keep it forever, `--ttl 30d` to auto-expire. |
-| `pmb learn "..."` | Record a durable **lesson** ("this repo uses pnpm, never npm"). `--failed` records a failure to avoid repeating. |
-| `pmb fact "..."` | Record a standalone fact. `--ttl 30d` optional. |
-| `pmb remember "query" "response"` | Store a Q/A pair. |
-| `pmb import <source> <path>` | Import existing history: `chatgpt`, `claude`, `mem0`, `markdown` (Obsidian vault). Rebuilds the graph after. |
-| `pmb watch <file\|dir>` | Auto-capture new paragraphs from a notes file/folder. `--once` for cron. |
+| `lume note "..."` | Jot a memory from the terminal. `--pin` to keep it forever, `--ttl 30d` to auto-expire. |
+| `lume learn "..."` | Record a durable **lesson** ("this repo uses pnpm, never npm"). `--failed` records a failure to avoid repeating. |
+| `lume fact "..."` | Record a standalone fact. `--ttl 30d` optional. |
+| `lume remember "query" "response"` | Store a Q/A pair. |
+| `lume import <source> <path>` | Import existing history: `chatgpt`, `claude`, `mem0`, `markdown` (Obsidian vault). Rebuilds the graph after. |
+| `lume watch <file\|dir>` | Auto-capture new paragraphs from a notes file/folder. `--once` for cron. |
 
 ```bash
-pmb note "decided to use Postgres for JSONB" --pin
-pmb learn "always run make fmt before committing"
-pmb import chatgpt ~/Downloads/conversations.json
+lume note "decided to use Postgres for JSONB" --pin
+lume learn "always run make fmt before committing"
+lume import chatgpt ~/Downloads/conversations.json
 ```
 
 ---
@@ -73,14 +73,14 @@ All local, Haiku by default (or fully offline via Ollama), idempotent.
 
 | Command | What it does |
 |---|---|
-| `pmb track changes` | Summarise the INTENT of new git commits (Haiku) and link it to the files touched - keeps the "why", not the raw diff. Idempotent via a per-repo cursor. `--since`, `--max-commits`, `--backend`. |
-| `pmb track modules` | A one-line "what this file does" per indexed file. Run `pmb index project` first. `--limit`, `--force`. |
-| `pmb track install` | Install a git post-commit hook so `track changes` runs automatically (background, non-blocking, never clobbers an existing hook). |
+| `lume track changes` | Summarise the INTENT of new git commits (Haiku) and link it to the files touched - keeps the "why", not the raw diff. Idempotent via a per-repo cursor. `--since`, `--max-commits`, `--backend`. |
+| `lume track modules` | A one-line "what this file does" per indexed file. Run `lume index project` first. `--limit`, `--force`. |
+| `lume track install` | Install a git post-commit hook so `track changes` runs automatically (background, non-blocking, never clobbers an existing hook). |
 
 ```bash
-pmb index project . && pmb track modules     # structure + purpose
-pmb track changes                            # capture intent of new commits
-pmb track install                            # keep it current automatically
+lume index project . && lume track modules     # structure + purpose
+lume track changes                            # capture intent of new commits
+lume track install                            # keep it current automatically
 ```
 
 The agent reads all of this back from memory with the **`project_structure(name)`**
@@ -101,7 +101,7 @@ reuse a past session's research instead of re-deriving it:
 - **Auto-capture** (`memo.autocapture_enabled`, default off) - a Stop hook that
   memoizes a turn's research conclusion from the transcript when it read several
   files, so `recall_exploration` can reuse it later.
-- **Earned Memory** - `pmb health lessons-impact` (CLI) and the `lesson_impact` MCP
+- **Earned Memory** - `lume health lessons-impact` (CLI) and the `lesson_impact` MCP
   tool show which lessons actually help outcomes: per-lesson success-rate, lift vs
   the no-lesson baseline, and churn, by joining surfaced lessons to turn outcomes.
 
@@ -111,24 +111,24 @@ reuse a past session's research instead of re-deriving it:
 
 A structured markdown snapshot of "where we are now" - open goals, recent
 decisions, lessons, recent activity, files touched, latest exploration
-conclusions, and project structure. Sourced from PMB's typed memory (not
-extractive), so the sections carry real structure. Commit `.pmb/resume.md` to
+conclusions, and project structure. Sourced from Lume's typed memory (not
+ extractive), so the sections carry real structure. Commit `.lume/resume.md` to
 git and share session continuity with your team.
 
 | Command | What it does |
 |---|---|
-| `pmb resume save [--path .pmb/resume.md]` | Write the resume note now. |
-| `pmb resume show` | Print the current resume note. |
-| `pmb resume install` | Enable auto-refresh at every turn end (Stop hook). Sets `resume.auto_save_enabled=true`. |
+| `lume resume save [--path .lume/resume.md]` | Write the resume note now. |
+| `lume resume show` | Print the current resume note. |
+| `lume resume install` | Enable auto-refresh at every turn end (Stop hook). Sets `resume.auto_save_enabled=true`. |
 
-Hand-edited additions below the `<!-- PMB-RESUME-MARKER ... -->` line are
+Hand-edited additions below the `<!-- Lume-RESUME-MARKER ... -->` line are
 preserved verbatim across regenerations.
 
 ---
 
 ## Memory Delta Protocol (compact repeat injections, opt-in)
 
-A per-session ledger of items PMB has already shown the agent. When auto-context
+A per-session ledger of items Lume has already shown the agent. When auto-context
 re-injects the same lesson, the renderer collapses it to a one-liner handle
 reference (`! [M07] still active`) instead of restating the full text. New
 items get a fresh `[Mxx]` tag, updated items are flagged, and items that left
@@ -143,9 +143,9 @@ turn after turn) rather than cross-chat (handles can't survive a new chat).
 
 | Command | What it does |
 |---|---|
-| `pmb config set memory_delta.enabled true` | Enable the protocol. |
-| `pmb memory ledger [--session ID]` | Inspect handles assigned this session. |
-| `pmb memory rehydrate <SESSION_ID>` | Manually wipe a session's ledger (Context Rebase). |
+| `lume config set memory_delta.enabled true` | Enable the protocol. |
+| `lume memory ledger [--session ID]` | Inspect handles assigned this session. |
+| `lume memory rehydrate <SESSION_ID>` | Manually wipe a session's ledger (Context Rebase). |
 
 ---
 
@@ -153,25 +153,25 @@ turn after turn) rather than cross-chat (handles can't survive a new chat).
 
 | Command | What it does |
 |---|---|
-| `pmb recall "query" [-k 5]` | Search memory. Each hit shows source, confidence, freshness, and markers for lessons and failures. |
-| `pmb why "query"` | Explain the ranking - which of the 14 PAMVR rules fired and each multiplier. |
-| `pmb overview "<topic>"` | Structured "what do I know about X?" - key facts & decisions, lessons, failures, goals, timeline, related topics. Also an **MCP tool** so the agent can get up to speed on a topic in one call. |
-| `pmb timeline` | Chronological, day-grouped view (`--days`, `--type`, `--newest-first`). |
-| `pmb insights` | Analytics: totals, type breakdown, weekly growth, top topics, lessons/goals counts. |
-| `pmb digest [today\|week\|month]` | Recap of recent memories (`--days N`). |
-| `pmb audit` | "What does PMB know about me?" - grouped, read-only view + memory-health signals. |
-| `pmb lessons` | List the durable lessons & failures (procedural memory). |
-| `pmb reminders` | Goals that are overdue or due soon (`--within N`, `--all`). |
-| `pmb tags` / `pmb tagged <tag>` | List tags / list memories in a tag "collection". |
-| `pmb list [-n 20] [--type T]` | Recent events. |
-| `pmb stats` | Workspace stats. |
-| `pmb graph stats\|top\|neighbors\|rebuild` | Inspect the entity/association graph. |
+| `lume recall "query" [-k 5]` | Search memory. Each hit shows source, confidence, freshness, and markers for lessons and failures. |
+| `lume why "query"` | Explain the ranking - which of the 14 PAMVR rules fired and each multiplier. |
+| `lume overview "<topic>"` | Structured "what do I know about X?" - key facts & decisions, lessons, failures, goals, timeline, related topics. Also an **MCP tool** so the agent can get up to speed on a topic in one call. |
+| `lume timeline` | Chronological, day-grouped view (`--days`, `--type`, `--newest-first`). |
+| `lume insights` | Analytics: totals, type breakdown, weekly growth, top topics, lessons/goals counts. |
+| `lume digest [today\|week\|month]` | Recap of recent memories (`--days N`). |
+| `lume audit` | "What does Lume know about me?" - grouped, read-only view + memory-health signals. |
+| `lume lessons` | List the durable lessons & failures (procedural memory). |
+| `lume reminders` | Goals that are overdue or due soon (`--within N`, `--all`). |
+| `lume tags` / `lume tagged <tag>` | List tags / list memories in a tag "collection". |
+| `lume list [-n 20] [--type T]` | Recent events. |
+| `lume stats` | Workspace stats. |
+| `lume graph stats\|top\|neighbors\|rebuild` | Inspect the entity/association graph. |
 
 ```bash
-pmb recall "where do I live now" -k 5
-pmb why "what port did we choose"
-pmb timeline --days 7
-pmb insights
+lume recall "where do I live now" -k 5
+lume why "what port did we choose"
+lume timeline --days 7
+lume insights
 ```
 
 ---
@@ -180,27 +180,27 @@ pmb insights
 
 | Command | What it does |
 |---|---|
-| `pmb export [--format markdown\|json] [--out FILE]` | Dump all memory to readable text (`--include-archived`). Plain/unencrypted. |
-| `pmb tag <ulid> <tags...>` / `pmb untag` | Tag / untag a memory for local organization. |
-| `pmb ttl <ulid> 30d\|clear` | Set / clear an expiry on a memory. |
-| `pmb prune-expired` | Archive memories past their TTL (run from cron). |
-| `pmb forget <ulid>` | Archive one memory (reversible). |
-| `pmb delete <ulid...>` | Archive one or more memories after a preview and confirmation. Reversible. |
-| `pmb delete <ulid...> --hard` | Permanently purge matching memories, vectors, and graph links after confirmation. |
-| `pmb restore <ulid>` | Restore a soft-deleted or archived memory. |
-| `pmb forget-topic <topic>` | Archive everything about a topic in one command (`--dry-run`, `--yes`, `--in content\|tag\|source`). |
-| `pmb pin <ulid>` | Pin a memory (max importance, never auto-archived). |
-| `pmb snapshot create\|list\|verify\|restore` | Verified local snapshots; `list --json` for scripts. |
-| `pmb decay` | Apply the forgetting curve (lowers importance, archives stale). |
-| `pmb dedupe` <span class="pmb-tag pmb-tag--llm">LLM optional</span> | Deduplicate. Offline cosine sweep by default; `--run-pending` uses an LLM for borderline pairs. |
-| `pmb compact` | Move old archived events to cold storage + VACUUM. |
+| `lume export [--format markdown\|json] [--out FILE]` | Dump all memory to readable text (`--include-archived`). Plain/unencrypted. |
+| `lume tag <ulid> <tags...>` / `lume untag` | Tag / untag a memory for local organization. |
+| `lume ttl <ulid> 30d\|clear` | Set / clear an expiry on a memory. |
+| `lume prune-expired` | Archive memories past their TTL (run from cron). |
+| `lume forget <ulid>` | Archive one memory (reversible). |
+| `lume delete <ulid...>` | Archive one or more memories after a preview and confirmation. Reversible. |
+| `lume delete <ulid...> --hard` | Permanently purge matching memories, vectors, and graph links after confirmation. |
+| `lume restore <ulid>` | Restore a soft-deleted or archived memory. |
+| `lume forget-topic <topic>` | Archive everything about a topic in one command (`--dry-run`, `--yes`, `--in content\|tag\|source`). |
+| `lume pin <ulid>` | Pin a memory (max importance, never auto-archived). |
+| `lume snapshot create\|list\|verify\|restore` | Verified local snapshots; `list --json` for scripts. |
+| `lume decay` | Apply the forgetting curve (lowers importance, archives stale). |
+| `lume dedupe` <span class="pmb-tag pmb-tag--llm">LLM optional</span> | Deduplicate. Offline cosine sweep by default; `--run-pending` uses an LLM for borderline pairs. |
+| `lume compact` | Move old archived events to cold storage + VACUUM. |
 
 ```bash
-pmb export --format json --out memory.json
-pmb delete 0193abc12345_deadbeef
-pmb restore 0193abc12345_deadbeef
-pmb forget-topic project-x --dry-run
-pmb snapshot create --note "before refactor"
+lume export --format json --out memory.json
+lume delete 0193abc12345_deadbeef
+lume restore 0193abc12345_deadbeef
+lume forget-topic project-x --dry-run
+lume snapshot create --note "before refactor"
 ```
 
 ---
@@ -209,12 +209,12 @@ pmb snapshot create --note "before refactor"
 
 | Command | What it does |
 |---|---|
-| `pmb workspace init [--remote URL]` | Turn the workspace into a git repo. |
-| `pmb workspace push` / `pull` / `status` | Sync memory to/from a git remote (cross-device, team, backup). |
-| `pmb workspace clone <url> <name>` | Clone a remote workspace locally. |
-| `pmb workspace export <out> [--key-file]` | Encrypt the workspace into one portable bundle (scrypt + AES/HMAC) - safe even on a public remote. Needs `pip install 'pmb-ai[crypto]'`. |
-| `pmb workspace import <bundle> <name>` | Decrypt a bundle into a local workspace. |
-| `pmb workspaces` | List all known workspaces. |
+| `lume workspace init [--remote URL]` | Turn the workspace into a git repo. |
+| `lume workspace push` / `pull` / `status` | Sync memory to/from a git remote (cross-device, team, backup). |
+| `lume workspace clone <url> <name>` | Clone a remote workspace locally. |
+| `lume workspace export <out> [--key-file]` | Encrypt the workspace into one portable bundle (scrypt + AES/HMAC) - safe even on a public remote. Needs `pip install 'pmb-ai[crypto]'`. |
+| `lume workspace import <bundle> <name>` | Decrypt a bundle into a local workspace. |
+| `lume workspaces` | List all known workspaces. |
 
 ---
 
@@ -222,23 +222,23 @@ pmb snapshot create --note "before refactor"
 
 | Command | What it does |
 |---|---|
-| `pmb config list` | Every setting, its value, and where the value comes from (`--only-overridden`). |
-| `pmb config get\|set\|reset <key> [value]` | Read / change / reset a setting (workspace or `--global`). |
-| `pmb dashboard` | Local web dashboard on `127.0.0.1:8765`: graph, timeline, a live **Settings** editor, an **Errors** view, perf, and a recall debugger. Replaces the old `tui`/`tune` TUIs. |
+| `lume config list` | Every setting, its value, and where the value comes from (`--only-overridden`). |
+| `lume config get\|set\|reset <key> [value]` | Read / change / reset a setting (workspace or `--global`). |
+| `lume dashboard` | Local web dashboard on `127.0.0.1:8765`: graph, timeline, a live **Settings** editor, an **Errors** view, perf, and a recall debugger. Replaces the old `tui`/`tune` TUIs. |
 
 ```bash
-pmb config set recall.top_k 8
-pmb config list --only-overridden
+lume config set recall.top_k 8
+lume config list --only-overridden
 ```
 
 ### Pro: tune what `--active` logs
 
-`pmb connect --active` builds the agent's rules from these toggles (all default
-on). Change them, then re-run `pmb connect <agent> --active` to regenerate.
+`lume connect --active` builds the agent's rules from these toggles (all default
+on). Change them, then re-run `lume connect <agent> --active` to regenerate.
 
 | Key | Effect |
 |---|---|
-| `agent.active_mode` | When on, `pmb connect` / `pmb setup` install the proactive rules **by default** (no `--active` flag needed) |
+| `agent.active_mode` | When on, the server sends proactive rules to MCP clients on connect/reconnect; local `lume connect` / `lume setup` also install them **by default** (no `--active` flag needed) |
 | `agent.log_decisions` | Log design/code decisions |
 | `agent.log_completed` | Log what was done (features / fixes) |
 | `agent.log_lessons` | Log project conventions / corrections |
@@ -248,15 +248,15 @@ on). Change them, then re-run `pmb connect <agent> --active` to regenerate.
 | `agent.context_continuity` | Tell the agent to call `session_brief` to re-orient after its own context compacts in a long session |
 
 ```bash
-pmb config set agent.log_goals false       # don't log goals
-pmb connect codex --active                 # regenerate rules
+lume config set agent.log_goals false       # don't log goals
+lume connect codex --active                 # regenerate rules
 ```
 
 ### Pro: choose the entity-graph extractor
 
 The dashboard's memory graph and `recall`'s graph-boost step both lean on the
 **entity extractor** - the thing that turns event text into nodes
-(`file` / `tech` / `person` / `concept`). PMB ships three backends; swap one
+(`file` / `tech` / `person` / `concept`). Lume ships three backends; swap one
 at runtime, no code changes:
 
 | Backend | What it does | Cost | Deps |
@@ -270,20 +270,20 @@ at runtime, no code changes:
 
 ```bash
 # default - leave it at regex unless the noise bugs you
-pmb config set graph.extractor regex
+lume config set graph.extractor regex
 
 # nicer no-LLM extraction
 pip install spacy && python -m spacy download en_core_web_sm
-pmb config set graph.extractor spacy
+lume config set graph.extractor spacy
 
 # cleanest knowledge graph (LLM at write time)
-pmb config set graph.extractor llm:claude       # uses your Claude Code login
-pmb config set graph.extractor llm:openai       # uses OPENAI_API_KEY
-pmb config set graph.llm_max_concepts 5
-pmb config set graph.llm_timeout_s 30
+lume config set graph.extractor llm:claude       # uses your Claude Code login
+lume config set graph.extractor llm:openai       # uses OPENAI_API_KEY
+lume config set graph.llm_max_concepts 5
+lume config set graph.llm_timeout_s 30
 
 # hide one-off noise in the dashboard graph (DB stays intact)
-pmb config set graph.viz_min_mentions 2
+lume config set graph.viz_min_mentions 2
 ```
 
 LLM backends never block the write path: if the CLI times out or returns
@@ -297,11 +297,11 @@ entities end up as graph nodes, not the recall pipeline.
 
 | Command | What it does |
 |---|---|
-| `pmb ollama status` | Health check + list installed models. |
-| `pmb ollama use <profile>` | Select a model profile (tiny / balanced / quality). |
-| `pmb ollama test` | Smoke-test the local model. |
+| `lume ollama status` | Health check + list installed models. |
+| `lume ollama use <profile>` | Select a model profile (tiny / balanced / quality). |
+| `lume ollama test` | Smoke-test the local model. |
 
-Ollama is **optional** - PMB works fully offline without any LLM. It's only used
+Ollama is **optional** - Lume works fully offline without any LLM. It's only used
 by the LLM-powered commands below (and only if you choose it over Claude
 CLI / Anthropic / OpenAI).
 
@@ -315,15 +315,15 @@ itself never calls an LLM.
 
 | Command | What it does |
 |---|---|
-| `pmb consolidate` <span class="pmb-tag pmb-tag--llm">LLM</span> | Sleep-stage consolidation: cluster related memories, extract one rule per cluster. |
-| `pmb reflect` <span class="pmb-tag pmb-tag--llm">LLM</span> | For each event, an LLM asks "why does this matter?" and stores searchable bridges for multi-hop queries. |
-| `pmb distill` <span class="pmb-tag pmb-tag--llm">LLM</span> | Extract durable lessons/failures from a session's events automatically. |
-| `pmb arcs cluster` <span class="pmb-tag pmb-tag--llm">LLM</span> | Cluster events into narrative threads ("Postgres adoption journey"). |
-| `pmb dedupe --run-pending` <span class="pmb-tag pmb-tag--llm">LLM</span> | Resolve borderline duplicate pairs via LLM. |
+| `lume consolidate` <span class="pmb-tag pmb-tag--llm">LLM</span> | Sleep-stage consolidation: cluster related memories, extract one rule per cluster. |
+| `lume reflect` <span class="pmb-tag pmb-tag--llm">LLM</span> | For each event, an LLM asks "why does this matter?" and stores searchable bridges for multi-hop queries. |
+| `lume distill` <span class="pmb-tag pmb-tag--llm">LLM</span> | Extract durable lessons/failures from a session's events automatically. |
+| `lume arcs cluster` <span class="pmb-tag pmb-tag--llm">LLM</span> | Cluster events into narrative threads ("Postgres adoption journey"). |
+| `lume dedupe --run-pending` <span class="pmb-tag pmb-tag--llm">LLM</span> | Resolve borderline duplicate pairs via LLM. |
 
 ```bash
-pmb consolidate --backend auto        # auto = Claude CLI > Anthropic > OpenAI > Ollama
-pmb distill                           # turn a session into lessons
+lume consolidate --backend auto        # auto = Claude CLI > Anthropic > OpenAI > Ollama
+lume distill                           # turn a session into lessons
 ```
 
 ---
@@ -332,47 +332,47 @@ pmb distill                           # turn a session into lessons
 
 | Command | What it does |
 |---|---|
-| `pmb regraph` | Rebuild the entity/edge graph from active events. |
-| `pmb prune-graph` | Drop weak co-occurrence edges to keep recall fast on large workspaces. |
-| `pmb reindex` | Re-embed all events (after switching the embedding model). |
-| `pmb rehearse` | Spaced-repetition refresh of important-but-idle memories. |
-| `pmb session start\|end\|current\|brief` | Session management. `brief` = digest of what was decided/done/learned **this session** (re-orient after a long session or context loss). Also an **MCP tool** `session_brief` the agent calls when it loses the thread. End can auto-distill lessons if enabled. |
-| `pmb sync [--days N]` | Capture git commits into memory. |
-| `pmb schedule` | Print OS scheduler config (cron / Windows schtasks) for background jobs. |
+| `lume regraph` | Rebuild the entity/edge graph from active events. |
+| `lume prune-graph` | Drop weak co-occurrence edges to keep recall fast on large workspaces. |
+| `lume reindex` | Re-embed all events (after switching the embedding model). |
+| `lume rehearse` | Spaced-repetition refresh of important-but-idle memories. |
+| `lume session start\|end\|current\|brief` | Session management. `brief` = digest of what was decided/done/learned **this session** (re-orient after a long session or context loss). Also an **MCP tool** `session_brief` the agent calls when it loses the thread. End can auto-distill lessons if enabled. |
+| `lume sync [--days N]` | Capture git commits into memory. |
+| `lume schedule` | Print OS scheduler config (cron / Windows schtasks) for background jobs. |
 
 ---
 
 ## Hooks & ambient memory
 
-Hooks force-feed PMB at the protocol level, so memory works without the
-model remembering to call anything. `pmb hooks install claude-code` wires
+Hooks force-feed Lume at the protocol level, so memory works without the
+model remembering to call anything. `lume hooks install claude-code` wires
 all four lifecycle hooks; Codex and MCP-only hosts get the equivalent via
-their own mechanisms (check `pmb hooks capabilities`).
+their own mechanisms (check `lume hooks capabilities`).
 
 | Command | What it does |
 |---|---|
-| `pmb hooks install <agent>` | Wire the lifecycle hooks. Claude Code: UserPromptSubmit + PostToolUse + SessionStart + Stop. Codex: a `notify` → `pmb codex-notify`. |
-| `pmb hooks list` | Show which hooks are installed. |
-| `pmb hooks capabilities` | What ambient mechanism each agent supports: `hooks` (Claude Code) / `rollout` (Codex) / `mcp-only` (git observer). |
-| `pmb hooks uninstall <agent>` | Remove the hooks. |
-| `pmb auto-context "..."` | Preview the per-turn memory a UserPromptSubmit hook would inject. |
-| `pmb session-restore [-m MIN]` | Preview the "where you left off" digest a SessionStart hook injects after a compaction. |
-| `pmb lesson-followcheck --dry-run` | Preview deterministic follow-through scoring for surfaced lessons. |
-| `pmb autowrite [--dry-run]` <span class="pmb-tag pmb-tag--llm">LLM optional</span> | Ambient auto-write for the current turn: if the agent didn't call a `record_*` tool, synthesize ONE activity entry from observed actions. No-op unless `autowrite.enabled`. Uses an LLM only if `autowrite.synthesizer` is an LLM backend - the default template needs no model. |
-| `pmb track-action` | (Hook-invoked.) Append one observed action to the ambient journal - the PostToolUse hot path (single SQLite INSERT, no model). |
-| `pmb ambient-watch <dir> [<dir>...]` <span class="pmb-tag pmb-tag--llm">LLM optional</span> | Ambient auto-write for MCP-only hosts (Cursor/Zed/VS Code): poll git for changes, auto-write once the project goes idle. Pass several dirs to run them in one process; add `--save`, then later use `pmb ambient-watch --all`. |
-| `pmb codex-notify` <span class="pmb-tag pmb-tag--llm">LLM optional</span> | (Hook-invoked by Codex on `agent-turn-complete`.) Parse the session rollout, then run ambient auto-write. |
-| `pmb forget-auto [--minutes N]` | Archive memory the ambient layer wrote itself (`source=autowrite`). Reversible - archived, not hard-deleted. |
+| `lume hooks install <agent>` | Wire the lifecycle hooks. Claude Code: UserPromptSubmit + PostToolUse + SessionStart + Stop. Codex: a `notify` → `lume codex-notify`. |
+| `lume hooks list` | Show which hooks are installed. |
+| `lume hooks capabilities` | What ambient mechanism each agent supports: `hooks` (Claude Code) / `rollout` (Codex) / `mcp-only` (git observer). |
+| `lume hooks uninstall <agent>` | Remove the hooks. |
+| `lume auto-context "..."` | Preview the per-turn memory a UserPromptSubmit hook would inject. |
+| `lume session-restore [-m MIN]` | Preview the "where you left off" digest a SessionStart hook injects after a compaction. |
+| `lume lesson-followcheck --dry-run` | Preview deterministic follow-through scoring for surfaced lessons. |
+| `lume autowrite [--dry-run]` <span class="pmb-tag pmb-tag--llm">LLM optional</span> | Ambient auto-write for the current turn: if the agent didn't call a `record_*` tool, synthesize ONE activity entry from observed actions. No-op unless `autowrite.enabled`. Uses an LLM only if `autowrite.synthesizer` is an LLM backend - the default template needs no model. |
+| `lume track-action` | (Hook-invoked.) Append one observed action to the ambient journal - the PostToolUse hot path (single SQLite INSERT, no model). |
+| `lume ambient-watch <dir> [<dir>...]` <span class="pmb-tag pmb-tag--llm">LLM optional</span> | Ambient auto-write for MCP-only hosts (Cursor/Zed/VS Code): poll git for changes, auto-write once the project goes idle. Pass several dirs to run them in one process; add `--save`, then later use `lume ambient-watch --all`. |
+| `lume codex-notify` <span class="pmb-tag pmb-tag--llm">LLM optional</span> | (Hook-invoked by Codex on `agent-turn-complete`.) Parse the session rollout, then run ambient auto-write. |
+| `lume forget-auto [--minutes N]` | Archive memory the ambient layer wrote itself (`source=autowrite`). Reversible - archived, not hard-deleted. |
 
 Ambient auto-write is **ON by default** and never duplicates the agent's
 own `record_*` calls - it only fills the gap when the agent stays silent.
 A turn is journaled only if it clears an outcome-based quality bar (tests
 passed, a failure fixed, a deploy ran), so mechanical churn is dropped.
-Tune everything via `autowrite.*` (`pmb config list`).
+Tune everything via `autowrite.*` (`lume config list`).
 
 **Repeat-prevention (ON by default).** When a message reads as pushback /
 frustration (profanity, ALL-CAPS, "те же грабли", a repeat-word plus a negated
-action), PMB records a DRAFT lesson on the *first* complaint
+action), Lume records a DRAFT lesson on the *first* complaint
 (`auto_recall.correction_capture`) so the rule exists when it's needed - not
 after the seventh time. If a later message or a tool call strongly overlaps a
 known rule or past failure, the guard surfaces it LOUD: at message time
@@ -386,12 +386,12 @@ rule cannot fade out of ranking.
 
 ## How it embeds into your workflow (no lock-in)
 
-- **Lazy by default.** After `pmb connect`, the agent ignores PMB for general
+- **Lazy by default.** After `lume connect`, the agent ignores Lume for general
   and coding questions and only touches it on explicit triggers (or, with
   `--active`, when it finishes a meaningful unit of work). You can talk to the
-  agent normally and never trigger PMB.
-- **Nothing is forced.** Use the agent's native abilities freely; PMB only
+  agent normally and never trigger Lume.
+- **Nothing is forced.** Use the agent's native abilities freely; Lume only
   chimes in when asked.
-- **Remove it anytime.** Delete the `pmb` entry from the agent's MCP config to
+- **Remove it anytime.** Delete the `lume` entry from the agent's MCP config to
   disconnect - your stored memory stays on disk and is still readable via the
   CLI.

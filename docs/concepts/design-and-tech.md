@@ -1,6 +1,6 @@
 # Design and technology
 
-This page covers the design patterns PMB leans on, the technology stack, and the
+This page covers the design patterns Lume leans on, the technology stack, and the
 key decisions behind them. For how the pieces fit at runtime, see
 [Architecture](architecture.md).
 
@@ -13,12 +13,12 @@ key decisions behind them. For how the pieces fit at runtime, see
 - **One warm shared process.** The cost of memory is loading the embedding
   model. A single warm daemon holds it, and every connected agent reuses it, so
   N agents cost about one model in RAM rather than N.
-- **Thin client with a fast lane and graceful fallback.** `pmb-hook` is a
+- **Thin client with a fast lane and graceful fallback.** `lume-hook` is a
   stdlib only client that talks to the warm daemon in milliseconds, and falls
   back to a cold in process path the moment the daemon is absent. Nothing breaks
   when the daemon is down, it just gets slower for one message.
 - **Bridge adapter for stdio only hosts.** Codex cannot take an HTTP MCP entry,
-  so `pmb mcp proxy` bridges stdio to the daemon over HTTP. The same warm
+  so `lume mcp proxy` bridges stdio to the daemon over HTTP. The same warm
   process serves both JSON hosts and stdio hosts.
 - **Layered configuration.** Settings resolve in order: per call overrides, then
   the workspace config, then the global config, then schema defaults. One schema
@@ -89,7 +89,7 @@ no toolchain to maintain.
 
 ## Testing and quality
 
-PMB ships with a large pytest suite covering the engine, retrieval quality, the
+Lume ships with a large pytest suite covering the engine, retrieval quality, the
 CLI, the MCP layer, the hooks, and integration paths. Recall quality has its own
 regression gates with real, deterministic embeddings so a change that would lower
 recall is caught before it ships. Linting is enforced with Ruff.

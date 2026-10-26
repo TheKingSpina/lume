@@ -16,7 +16,6 @@ import sqlite3
 from pathlib import Path
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.reasoning.attributes import looks_like_future_intent
 
@@ -101,7 +100,7 @@ def test_record_fact_does_not_flag_settled_fact(tmp_pmb_home, tmp_workspace_dir)
 # ── routing rule lives in the agent-facing text (regression guard) ──────────
 
 def test_routing_rule_present_in_docstrings_and_template():
-    src = next(p for p in Path(__file__).resolve().parents if (p / "pyproject.toml").is_file()) / "src" / "pmb"
+    src = next(p for p in Path(__file__).resolve().parents if (p / "pyproject.toml").is_file()) / "src" / "lume"
     tools = (src / "mcp" / "tools.py").read_text(encoding="utf-8")
     assert "FUTURE INTENT" in tools  # record_fact rule
     connect = (src / "cli" / "connect.py").read_text(encoding="utf-8")
@@ -111,9 +110,8 @@ def test_routing_rule_present_in_docstrings_and_template():
 # ── CLI ─────────────────────────────────────────────────────────────────────
 
 def test_cli_goals_list_and_done(tmp_pmb_home, monkeypatch):
-    from typer.testing import CliRunner
-
     from pmb.cli.main import app
+    from typer.testing import CliRunner
     # Pin the workspace via env (NOT chdir — chdir into a temp dir blocks its
     # cleanup on Windows) so the test's engine and the CLI share one workspace.
     monkeypatch.setenv("PMB_WORKSPACE", "goaltest")

@@ -1,6 +1,6 @@
 # MCP tools
 
-When you wire an agent with `pmb connect`, PMB appears as a set of MCP tools that
+When you wire an agent with `lume connect`, Lume appears as a set of MCP tools that
 the agent calls itself. These tools and the [Commands](COMMANDS.md) on the CLI
 share one engine and one workspace. This page lists the tools an agent sees.
 
@@ -10,14 +10,14 @@ by hand.
 
 ## Tool profiles
 
-PMB trims the tool list so the agent is not overwhelmed. Pick a profile with the
-`PMB_TOOL_PROFILE` environment variable, or let `pmb connect` choose one.
+Lume trims the tool list so the agent is not overwhelmed. Pick a profile with the
+`LUME_TOOL_PROFILE` environment variable, or let `lume connect` choose one.
 
 | Profile | Tools | For |
 |---|---|---|
 | `minimal` | 10 | **The default.** The core memory loop - read-first (`prepare`/`recall`/`project_overview`), the lesson loop, the single write path (`record_batch`), personal attrs, and goals. |
 | `lean` | 30 | `default` minus the read-status browse tools a host hook already covers (`what_just_happened`, `recent_activity`, `list_recent`, `overview`). |
-| `default` | 34 | The fuller day-to-day set (recall escalation, `record_fact`/`_tree`, ingestion, chains, stats). Opt in with `PMB_TOOL_PROFILE=default`. |
+| `default` | 34 | The fuller day-to-day set (recall escalation, `record_fact`/`_tree`, ingestion, chains, stats). Opt in with `LUME_TOOL_PROFILE=default`. |
 | `full` | ~65 | Everything, including maintenance and sleep-stage operations. |
 
 ## Read first

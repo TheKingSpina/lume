@@ -1,6 +1,6 @@
 # Assistant Integration Notes
 
-These notes come from testing PMB inside a long-running local voice assistant, where memory is used across many chats, voice commands, reminders, and follow-up questions.
+These notes come from testing Lume inside a long-running local voice assistant, where memory is used across many chats, voice commands, reminders, and follow-up questions.
 
 ## Practical recommendations
 
@@ -20,9 +20,9 @@ These notes come from testing PMB inside a long-running local voice assistant, w
 
 ## Useful behavior for voice assistants
 
-A good assistant integration usually needs two layers around PMB:
+A good assistant integration usually needs two layers around Lume:
 
 1. A memory decision layer that decides whether a message contains durable information worth remembering.
 2. A memory shaping layer that converts the message into short, stable, user-scoped facts before writing them.
 
-PMB provides the storage and retrieval foundation; the host assistant should still own identity resolution, routing, safety rules, and when to write memories.
+Lume provides the storage and retrieval foundation; the host assistant should still own identity resolution, routing, safety rules, and when to write memories.

@@ -16,7 +16,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.reasoning.router import (
     QueryRouter,
@@ -73,7 +72,7 @@ def test_identity_re_for_names_empty_and_cyrillic():
 # ── source guard ───────────────────────────────────────────────────────────
 
 def test_no_personal_name_literal_in_recall_and_router():
-    src = next(p for p in Path(__file__).resolve().parents if (p / "pyproject.toml").is_file()) / "src" / "pmb"
+    src = next(p for p in Path(__file__).resolve().parents if (p / "pyproject.toml").is_file()) / "src" / "lume"
     for rel in ("core/engine/recall.py", "reasoning/router.py"):
         text = (src / rel).read_text(encoding="utf-8").lower()
         assert "alex" not in text, f"personal-name literal 'alex' found in {rel}"

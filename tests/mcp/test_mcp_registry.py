@@ -6,7 +6,6 @@ from __future__ import annotations
 import os
 
 import pytest
-
 from pmb.mcp import registry as R
 
 DEAD_PID = 999_999_999  # astronomically unlikely to be a live process
@@ -64,18 +63,16 @@ def test_unregister(pmb_home):
 # ── CLI: pmb mcp status ────────────────────────────────────────────────────
 
 def test_mcp_status_empty(pmb_home):
-    from typer.testing import CliRunner
-
     from pmb.cli.main import app
+    from typer.testing import CliRunner
     r = CliRunner().invoke(app, ["mcp", "status"])
     assert r.exit_code == 0, r.output
-    assert "No PMB MCP servers" in r.output
+    assert "No Lume MCP servers" in r.output
 
 
 def test_mcp_status_lists_registered(pmb_home):
-    from typer.testing import CliRunner
-
     from pmb.cli.main import app
+    from typer.testing import CliRunner
     R.register_server(transport="streamable-http", host="127.0.0.1",
                       port=8765, path="/mcp", workspace="personal")
     r = CliRunner().invoke(app, ["mcp", "status"])

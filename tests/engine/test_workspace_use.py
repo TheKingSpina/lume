@@ -9,7 +9,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from pmb.core.workspace import (
     Workspace,
     detect_workspace,
@@ -28,6 +27,8 @@ def _make_ws(pmb_home: Path, ws_id: str, name: str = "WS") -> Workspace:
 
 @pytest.fixture
 def clean_env(monkeypatch):
+    monkeypatch.delenv("LUME_WORKSPACE", raising=False)
+    monkeypatch.delenv("LUME_HOME", raising=False)
     monkeypatch.delenv("PMB_WORKSPACE", raising=False)
     monkeypatch.delenv("PMB_HOME", raising=False)
 
@@ -105,9 +106,8 @@ def test_set_and_clear_roundtrip(tmp_path):
 
 @pytest.fixture
 def cli(tmp_path, monkeypatch):
-    from typer.testing import CliRunner
-
     from pmb.cli.main import app
+    from typer.testing import CliRunner
     home = tmp_path / "home"
     monkeypatch.setenv("PMB_HOME", str(home))
     monkeypatch.delenv("PMB_WORKSPACE", raising=False)

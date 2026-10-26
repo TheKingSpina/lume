@@ -1,12 +1,12 @@
 # Troubleshooting
 
 Most problems come down to the daemon, a port clash, or an agent that was not
-restarted after wiring. Start here, then run `pmb doctor` for a full check.
+restarted after wiring. Start here, then run `lume doctor` for a full check.
 
 ## First step: run the doctor
 
 ```bash
-pmb doctor
+lume doctor
 ```
 
 It checks the install, the MCP wiring, and the runtime state, and points at what
@@ -15,46 +15,46 @@ a remote daemon.
 
 ## The agent does not seem to use memory
 
-1. Restart the agent after `pmb setup` or `pmb connect`. Hosts read their MCP and
+1. Restart the agent after `lume setup` or `lume connect`. Hosts read their MCP and
    rules config at startup, so changes only take effect on the next launch.
-2. Confirm the wiring with `pmb doctor`, and that memory exists with `pmb stats`.
+2. Confirm the wiring with `lume doctor`, and that memory exists with `lume stats`.
 3. Remember how each host receives memory: Claude Code uses lifecycle hooks,
-   while Cursor, Zed, VS Code, Windsurf, Gemini, and Continue call PMB as MCP
+   while Cursor, Zed, VS Code, Windsurf, Gemini, and Continue call Lume as MCP
    tools when their installed rules say memory is relevant. See
    [Usage](usage.md).
 
 ## The dashboard and daemon fight over a port
 
-Both default to `127.0.0.1:8765`. Current PMB versions auto-skip the default
+Both default to `127.0.0.1:8765`. Current Lume versions auto-skip the default
 dashboard port when it is already busy:
 
 ```bash
-pmb dashboard
+lume dashboard
 ```
 
 If you want a fixed dashboard port, pass one explicitly:
 
 ```bash
-pmb dashboard --port 18888
+lume dashboard --port 18888
 ```
 
 If the OS still refuses the bind, check what is already running:
 
 ```bash
-pmb daemon status
+lume daemon status
 ```
 
 ## The daemon is not warm, or processes piled up
 
 ```bash
-pmb daemon status      # is the daemon up and warm?
-pmb daemon restart     # restart it, for example after changing the model
-pmb daemon kill-all    # stop the daemon and every stray PMB process, then reset
+lume daemon status      # is the daemon up and warm?
+lume daemon restart     # restart it, for example after changing the model
+lume daemon kill-all    # stop the daemon and every stray Lume process, then reset
 ```
 
-`pmb daemon kill-all` is the reset button: if duplicate warm processes pile up
+`lume daemon kill-all` is the reset button: if duplicate warm processes pile up
 and slow your machine, it stops all of them and clears the registry so you can
-start fresh with `pmb daemon start`.
+start fresh with `lume daemon start`.
 
 ## The first recall is slow
 
@@ -62,7 +62,7 @@ The slow part is loading the embedding model. Warm it once so the next recall is
 instant:
 
 ```bash
-pmb warmup
+lume warmup
 ```
 
 The shared daemon keeps it warm after that. If no daemon is running, a cold hook
@@ -76,8 +76,8 @@ surfaces nothing rather than a weak match. Query it directly and inspect the
 ranking:
 
 ```bash
-pmb recall "your query"
-pmb why "your query"      # which ranking rules fired, and each multiplier
+lume recall "your query"
+lume why "your query"      # which ranking rules fired, and each multiplier
 ```
 
 ## Recall is weak in another language
@@ -86,9 +86,9 @@ Recall works in any language on day one, but exact top-1 is weaker for CJK and a
 few lower-resource languages. Switch to a stronger multilingual embedder:
 
 ```bash
-pmb config set embedding.model BAAI/bge-m3
-pmb reindex
-pmb daemon restart
+lume config set embedding.model BAAI/bge-m3
+lume reindex
+lume daemon restart
 ```
 
 See [Adding a language](../contributing/adding-a-language.md) for the details.
@@ -99,7 +99,7 @@ Switching the embedder needs a re-embed. Use the one-step command instead of
 editing config by hand:
 
 ```bash
-pmb model            # download, re-embed memory, and restart the daemon
+lume model            # download, re-embed memory, and restart the daemon
 ```
 
 ## Ollama problems

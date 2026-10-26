@@ -6,10 +6,10 @@ malicious rewriting of both files and manifest. Use encrypted workspace exports
 when moving private memory to storage you do not control.
 
 ```bash
-pmb snapshot create --note "before cleanup"
-pmb snapshot list
-pmb snapshot list --json
-pmb snapshot verify 20260923-120000-123456
+lume snapshot create --note "before cleanup"
+lume snapshot list
+lume snapshot list --json
+lume snapshot verify 20260923-120000-123456
 ```
 
 Creation uses SQLite's online backup API for workspace `.sqlite` files,
@@ -28,12 +28,12 @@ Snapshots reject symlinks rather than follow files outside the workspace.
 Stop the daemon, close agent connections, and stop dashboards or direct writers:
 
 ```bash
-pmb daemon stop
-pmb snapshot verify <id>
-pmb snapshot restore <id>
+lume daemon stop
+lume snapshot verify <id>
+lume snapshot restore <id>
 ```
 
-Restore refuses while registered PMB servers are alive. The registry cannot
+Restore refuses while registered Lume servers are alive. The registry cannot
 identify every direct Python/CLI writer, so stopping those remains necessary.
 `--yes` skips the prompt; it does not bypass validation or the server guard.
 
@@ -41,7 +41,7 @@ Restore validates the source, stages and rechecks its files, and creates a
 verified `pre-restore-*` snapshot. It replaces the workspace contents, removing
 files absent from the chosen snapshot. Existing snapshots stay available. On an
 ordinary file-operation failure the moves are rolled back; the safety snapshot
-also remains. Restart PMB/agents after recovery so in-memory indexes are reopened.
+also remains. Restart Lume/agents after recovery so in-memory indexes are reopened.
 
 A process kill or power loss during the multi-file restore is not atomic. Stop
 writers and restore from the retained `pre-restore-*` snapshot after restarting.

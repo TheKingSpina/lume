@@ -9,7 +9,7 @@ hide:
 
 # Stop re-explaining your project to your AI
 
-PMB gives Claude Code, Codex, Cursor, and other MCP agents a shared private
+Lume gives Claude Code, Codex, Cursor, and other MCP agents a shared private
 memory. It remembers project decisions, lessons, goals, and past work, then
 injects the relevant context before the next answer.
 
@@ -17,7 +17,7 @@ SQLite is the durable source of truth. Rebuildable search indexes stay local.
 No cloud account, API key, telemetry, or LLM call on the read path.
 
 <div class="hero__actions" markdown>
-[View PMB on GitHub](https://github.com/oleksiijko/pmb){ .md-button .md-button--primary }
+[View Lume on GitHub](https://github.com/oleksiijko/pmb){ .md-button .md-button--primary }
 [Install in 60 seconds](guide/getting-started.md){ .md-button }
 </div>
 </div>
@@ -37,7 +37,7 @@ No cloud account, API key, telemetry, or LLM call on the read path.
 </div>
 <div class="hero__metric" markdown>
 <strong>Measured impact</strong>
-<span>PMB reports when the evidence is useful, harmful, or insufficient.</span>
+<span>Lume reports when the evidence is useful, harmful, or insufficient.</span>
 </div>
 </div>
 
@@ -45,28 +45,28 @@ No cloud account, API key, telemetry, or LLM call on the read path.
 
 <div class="pmb-demo" markdown>
 
-![Without memory the agent asks for context. With PMB it recalls the file, bug, and saved rule.](assets/before-after.svg)
+![Without memory the agent asks for context. With Lume it recalls the file, bug, and saved rule.](assets/before-after.svg)
 
 </div>
 
-Without memory, the next session starts with clarifying questions. With PMB, the
+Without memory, the next session starts with clarifying questions. With Lume, the
 agent can recover the relevant file, decision, and rule before it starts acting.
 
 ## Install once, then keep working
 
 ```bash
 pip install pmb-ai
-pmb setup
-pmb warmup
+lume setup
+lume warmup
 ```
 
-Restart your agent and talk normally. PMB handles the memory loop in the
+Restart your agent and talk normally. Lume handles the memory loop in the
 background. Prefer npm? `npx pmb-ai setup` runs the same setup flow.
 
 [Open the setup guide](guide/getting-started.md){ .md-button .md-button--primary }
 [Browse the source](https://github.com/oleksiijko/pmb){ .md-button }
 
-## Why PMB feels different
+## Why Lume feels different
 
 <div class="pmb-feature-grid" markdown>
 <div markdown>
@@ -94,7 +94,7 @@ flowchart LR
   Request["Your request"] --> Prepare["Prepare context"]
   Prepare --> Memory{"Relevant memory?"}
   Memory -->|Yes| Act["Agent acts informed"]
-  Memory -->|No| Quiet["PMB stays quiet"]
+  Memory -->|No| Quiet["Lume stays quiet"]
   Quiet --> Act
   Act --> Record["Save durable outcome"]
   Record --> Next["Better next session"]
@@ -109,7 +109,7 @@ flowchart LR
 | LoCoMo recall@10 | **94.5%** |
 | Multilingual stress top-10 | **99.2%** |
 
-Retrieval quality and real-world outcome impact are different questions. PMB
+Retrieval quality and real-world outcome impact are different questions. Lume
 reports them separately and says `insufficient` when the outcome sample is too
 small to support a conclusion.
 
@@ -118,7 +118,7 @@ small to support a conclusion.
 
 ## Ready to give your agent a memory?
 
-PMB is Apache-2.0 licensed and runs on Linux, macOS, and Windows.
+Lume is Apache-2.0 licensed and runs on Linux, macOS, and Windows.
 
-[View PMB on GitHub](https://github.com/oleksiijko/pmb){ .md-button .md-button--primary }
+[View Lume on GitHub](https://github.com/oleksiijko/pmb){ .md-button .md-button--primary }
 [Read the documentation](guide/index.md){ .md-button }

@@ -12,7 +12,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from pmb.cli.connect import (
     JSON_AGENT_SPECS,
     connect,
@@ -130,8 +129,8 @@ def test_connect_vscode_project_writes_servers_key(tmp_cwd):
     assert cfg_file == tmp_cwd / ".vscode" / "mcp.json"
     data = json.loads(cfg_file.read_text(encoding="utf-8"))
     assert "servers" in data            # VS Code uses 'servers', not 'mcpServers'
-    assert "pmb" in data["servers"]
-    assert data["servers"]["pmb"]["env"]["PMB_CWD"] == str(tmp_cwd)
+    assert "lume" in data["servers"]
+    assert data["servers"]["lume"]["env"]["LUME_CWD"] == str(tmp_cwd)
 
 
 def test_connect_zed_uses_config_path_override(tmp_cwd):
@@ -140,8 +139,8 @@ def test_connect_zed_uses_config_path_override(tmp_cwd):
     assert Path(res["config_path"]) == target
     data = json.loads(target.read_text(encoding="utf-8"))
     assert "context_servers" in data
-    assert "command" in data["context_servers"]["pmb"]
-    assert data["context_servers"]["pmb"]["command"]["path"]  # wrapped object
+    assert "command" in data["context_servers"]["lume"]
+    assert data["context_servers"]["lume"]["command"]["path"]  # wrapped object
 
 
 def test_connect_opencode_override(tmp_cwd):
@@ -149,10 +148,50 @@ def test_connect_opencode_override(tmp_cwd):
     res = connect("opencode", cwd=tmp_cwd, config_path=str(target))
     data = json.loads(target.read_text(encoding="utf-8"))
     assert "mcp" in data
-    entry = data["mcp"]["pmb"]
+    entry = data["mcp"]["servers"]["lume"]
     assert entry["type"] == "local"
     assert isinstance(entry["command"], list)
     assert entry["enabled"] is True
+
+
+def test_connect_opencode_remote_http_writes_v2_remote_entry(tmp_cwd):
+    target = tmp_cwd / "opencode.json"
+    target.write_text(json.dumps({
+        "mcp": {
+            "timeout": {"startup": 45000},
+            "servers": {"other": {"type": "remote", "url": "https://other/mcp"}},
+        },
+    }), encoding="utf-8")
+
+    res = connect(
+        "opencode", cwd=tmp_cwd, remote="http://127.0.0.1:8765/mcp",
+        bearer_token="secret", config_path=str(target),
+    )
+    data = json.loads(target.read_text(encoding="utf-8"))
+    assert res["entry"]["type"] == "remote"
+    assert data["mcp"]["timeout"] == {"startup": 45000}
+    servers = data["mcp"]["servers"]
+    assert servers["other"]["url"] == "https://other/mcp"
+    assert servers["lume-remote"] == {
+        "type": "remote",
+        "url": "http://127.0.0.1:8765/mcp",
+        "oauth": False,
+        "headers": {"Authorization": "Bearer {env:LUME_MCP_BEARER_TOKEN}"},
+    }
+
+
+def test_connect_opencode_migrates_legacy_direct_server_entries(tmp_cwd):
+    target = tmp_cwd / "opencode.json"
+    target.write_text(json.dumps({
+        "mcp": {"pmb-remote": {"type": "local", "command": [""]}},
+    }), encoding="utf-8")
+
+    connect("opencode", cwd=tmp_cwd, remote="http://127.0.0.1:8765/mcp",
+            bearer_token="secret", config_path=str(target))
+    data = json.loads(target.read_text(encoding="utf-8"))
+    assert "pmb-remote" not in data["mcp"]
+    assert "pmb-remote" not in data["mcp"]["servers"]
+    assert data["mcp"]["servers"]["lume-remote"]["type"] == "remote"
 
 
 def test_connect_continue_yaml_list(tmp_cwd):
@@ -161,7 +200,7 @@ def test_connect_continue_yaml_list(tmp_cwd):
     import yaml
     data = yaml.safe_load(target.read_text(encoding="utf-8"))
     assert isinstance(data["mcpServers"], list)
-    assert data["mcpServers"][0]["name"] == "pmb"
+    assert data["mcpServers"][0]["name"] == "lume"
 
 
 def test_connect_windsurf_override_preserves_others(tmp_cwd):
@@ -170,25 +209,25 @@ def test_connect_windsurf_override_preserves_others(tmp_cwd):
     connect("windsurf", cwd=tmp_cwd, config_path=str(target))
     data = json.loads(target.read_text(encoding="utf-8"))
     assert "other" in data["mcpServers"]
-    assert "pmb" in data["mcpServers"]
+    assert "lume" in data["mcpServers"]
 
 
 def test_connect_extended_shared_workspace_name(tmp_cwd):
     target = tmp_cwd / "gemini.json"
     res = connect("gemini", cwd=tmp_cwd, workspace_id="personal", config_path=str(target))
-    assert res["entry_name"] == "pmb-shared"
+    assert res["entry_name"] == "lume-shared"
     data = json.loads(target.read_text(encoding="utf-8"))
-    assert "pmb-shared" in data["mcpServers"]
-    assert data["mcpServers"]["pmb-shared"]["env"]["PMB_WORKSPACE"] == "personal"
+    assert "lume-shared" in data["mcpServers"]
+    assert data["mcpServers"]["lume-shared"]["env"]["LUME_WORKSPACE"] == "personal"
 
 
 def test_connect_extended_remote_ssh(tmp_cwd):
     target = tmp_cwd / "vscode.json"
     res = connect("vscode", cwd=tmp_cwd, remote="alex@server:/srv/repo",
                   config_path=str(target))
-    assert res["entry_name"] == "pmb-remote"
+    assert res["entry_name"] == "lume-remote"
     data = json.loads(target.read_text(encoding="utf-8"))
-    assert data["servers"]["pmb-remote"]["command"] == "ssh"
+    assert data["servers"]["lume-remote"]["command"] == "ssh"
 
 
 def test_connect_replace_is_idempotent(tmp_cwd):
@@ -197,5 +236,5 @@ def test_connect_replace_is_idempotent(tmp_cwd):
     res2 = connect("vscode", cwd=tmp_cwd, config_path=str(target))
     assert res2["action"] == "replaced"
     data = json.loads(target.read_text(encoding="utf-8"))
-    # exactly one pmb entry, not duplicated
-    assert list(data["servers"].keys()).count("pmb") == 1
+    # exactly one Lume entry, not duplicated
+    assert list(data["servers"].keys()).count("lume") == 1

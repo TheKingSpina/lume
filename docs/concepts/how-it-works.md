@@ -22,7 +22,7 @@ flowchart LR
 
 1. You send a message to your agent. The host fires the UserPromptSubmit hook
    with your text.
-2. `pmb-hook`, a small stdlib only client, posts the message to the warm daemon
+2. `lume-hook`, a small stdlib only client, posts the message to the warm daemon
    at `/internal/hook/prepare-context`. If no daemon is running, it answers from
    a cold in process Engine and asks a daemon to start in the background, so the
    next message is warm.
@@ -45,7 +45,7 @@ flowchart LR
 sequenceDiagram
   autonumber
   participant Agent
-  participant MCP as PMB MCP tool
+  participant MCP as Lume MCP tool
   participant Engine
   participant Store as SQLite + LanceDB + BM25
   participant Graph as Entity graph
@@ -98,12 +98,12 @@ flowchart LR
   memory forever. The hooks restart it on the next message.
 - A maintenance tick runs in the background while the daemon is idle, for tasks
   like archiving cold events. It never runs on the per message path.
-- Stdio only hosts such as Codex reach the daemon through `pmb mcp proxy`, a
+- Stdio only hosts such as Codex reach the daemon through `lume mcp proxy`, a
   light bridge that holds no model.
 
 ## What each hook does
 
-For Claude Code, PMB installs the full set:
+For Claude Code, Lume installs the full set:
 
 - **UserPromptSubmit** runs `prepare-context`: the read path above. This is the
   one that injects memory before the model thinks.
@@ -124,9 +124,9 @@ For Claude Code, PMB installs the full set:
   nothing itself.
 
 Codex has no per turn or session shell hook. Its one extension point is
-`notify`, fired when a turn completes, wired to `pmb codex-notify`, which reads
+`notify`, fired when a turn completes, wired to `lume codex-notify`, which reads
 the Codex rollout log for ambient memory. Read first and recall for Codex come
-from the AGENTS.md rules that `pmb connect codex` installs, so the agent calls
+from the AGENTS.md rules that `lume connect codex` installs, so the agent calls
 `prepare` and `recall` itself.
 
 ## Recall internals

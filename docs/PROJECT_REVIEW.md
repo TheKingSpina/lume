@@ -4,14 +4,14 @@ Assessment date: 2026-09-23. Baseline: `133f3a3`, version 1.2.3.
 
 ## Product and architecture
 
-PMB is persistent local memory for coding agents: SQLite holds durable events,
+Lume is persistent local memory for coding agents: SQLite holds durable events,
 LanceDB supplies semantic candidates, BM25 supplies lexical candidates, and the
 Engine combines these with graph, temporal, lesson, and relevance signals. The
 CLI, MCP server, warm daemon, lifecycle hooks, and vanilla-JavaScript dashboard
 are frontends to that engine. Optional LLM work runs during maintenance or
 explicit operations; it is not required for ordinary recall.
 
-The core engine is already divided into mixins under `src/pmb/core/engine/`.
+The core engine is already divided into mixins under `src/lume/core/engine/`.
 Existing configuration, durable queues, registry, workspace detection, and search
 APIs should be extended rather than replaced. No frontend framework migration,
 new embedding backend, or cloud service is needed for this release.
@@ -38,7 +38,7 @@ maintenance. Fixing model selection and native concurrency makes the existing
 features dependable. This is a feature release without intentionally breaking
 existing APIs, so 1.3 is more appropriate than a cosmetic 2.0.
 
-New commands: `pmb snapshot verify <id>` and `pmb snapshot list --json`.
+New commands: `lume snapshot verify <id>` and `lume snapshot list --json`.
 Creation publishes only complete snapshots. Restore rejects damaged or foreign
 inputs, retains a verified safety snapshot, removes stale files, and rolls back
 file moves on ordinary I/O errors. See [backup limits](guide/backups.md).

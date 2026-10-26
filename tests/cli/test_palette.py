@@ -86,7 +86,7 @@ def test_render_palette_carries_wordmark_and_match(catalog):
     Console(file=buf, force_terminal=False, width=100).print(
         render_palette("stats", results, selected=0))
     out = buf.getvalue()
-    assert "pmb" in out          # ✦ pmb wordmark in the panel title
+    assert "Lume" in out          # ✦ Lume wordmark in the panel title
     assert "stats" in out        # the matched command is listed
     assert "type to find" in out  # the keymap hint
 

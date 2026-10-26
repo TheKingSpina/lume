@@ -1,6 +1,6 @@
 # Deleting memories
 
-PMB gives you two ways to remove a memory, and two levels of removal. You can do
+Lume gives you two ways to remove a memory, and two levels of removal. You can do
 it from the web dashboard or from the command line, and both offer the same
 choice between a reversible archive and a permanent delete.
 
@@ -18,16 +18,16 @@ permanent delete.
 
 ## From the dashboard
 
-1. Start the dashboard: `pmb dashboard` (it opens on
+1. Start the dashboard: `lume dashboard` (it opens on
    `http://127.0.0.1:8765`). If the shared daemon already uses that port, run it
-   elsewhere, for example `pmb dashboard --port 18888`.
+   elsewhere, for example `lume dashboard --port 18888`.
 2. Open any memory by clicking it in the Timeline, the Map, or another view. A
    detail panel appears.
 3. At the bottom of the panel you have three actions:
    - **Pin** keeps the memory at maximum importance and protects it from
      automatic cleanup.
    - **Archive** hides it reversibly. You can restore it later from the command
-     line with `pmb restore`.
+     line with `lume restore`.
    - **Delete** (the red button) removes it permanently. The dashboard asks you
      to confirm first, because this cannot be undone.
 
@@ -39,20 +39,20 @@ removed disappears right away.
 ### Delete one or more memories
 
 ```bash
-pmb delete <ulid>                 # archive (reversible) - the default
-pmb delete <ulid> --hard          # purge permanently
-pmb delete <ulid_a> <ulid_b> ...  # several at once
-pmb delete <ulid> --yes           # skip the confirmation prompt
+lume delete <ulid>                 # archive (reversible) - the default
+lume delete <ulid> --hard          # purge permanently
+lume delete <ulid_a> <ulid_b> ...  # several at once
+lume delete <ulid> --yes           # skip the confirmation prompt
 ```
 
-`pmb delete` always shows a short preview of what it is about to remove and asks
+`lume delete` always shows a short preview of what it is about to remove and asks
 you to confirm, unless you pass `--yes`. For a permanent delete the prompt
 defaults to "no", so a stray Enter never destroys anything.
 
 ### Restore an archived memory
 
 ```bash
-pmb restore <ulid>
+lume restore <ulid>
 ```
 
 This undoes a soft delete (an archive). A permanent `--hard` delete cannot be
@@ -61,12 +61,12 @@ restored.
 ### Other ways to remove memory
 
 ```bash
-pmb forget <ulid>            # quick single archive (same as a soft delete)
-pmb forget-topic <topic>     # archive everything that mentions a topic
-pmb prune-expired            # archive memories whose TTL has passed
+lume forget <ulid>            # quick single archive (same as a soft delete)
+lume forget-topic <topic>     # archive everything that mentions a topic
+lume prune-expired            # archive memories whose TTL has passed
 ```
 
-`pmb forget-topic` is handy for clearing a whole project or subject in one step.
+`lume forget-topic` is handy for clearing a whole project or subject in one step.
 Add `--dry-run` to preview what it would archive, and `--yes` to skip the
 prompt.
 
@@ -74,9 +74,9 @@ prompt.
 
 Every memory has a short id (a ULID). You can find it in a few places:
 
-- In the dashboard event panel, and in `pmb timeline` and `pmb list`, where the
+- In the dashboard event panel, and in `lume timeline` and `lume list`, where the
   first part of the ULID is shown.
-- In `pmb recall "<query>"` output next to each hit.
+- In `lume recall "<query>"` output next to each hit.
 
 You only need the leading part of the ULID that the views display.
 

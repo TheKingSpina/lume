@@ -23,6 +23,7 @@ from pmb import lang
 
 @pytest.fixture
 def tmp_home(tmp_path, monkeypatch):
+    monkeypatch.setenv("LUME_HOME", str(tmp_path))
     monkeypatch.setenv("PMB_HOME", str(tmp_path))
     lang.clear_cache()
     yield tmp_path

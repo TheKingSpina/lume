@@ -21,9 +21,9 @@ def _profile_desc_chars(profile: str) -> tuple[int, int]:
     os.environ["PMB_TOOL_PROFILE"] = profile
     os.environ["PMB_HOME"] = tempfile.mkdtemp()
     # Re-import fresh so _TOOL_PROFILE picks up the env for this profile.
-    for mod in ("pmb.mcp.server", "pmb.mcp._toolspec"):
+    for mod in ("lume.mcp.server", "lume.mcp._toolspec", "pmb.mcp.server", "pmb.mcp._toolspec"):
         sys.modules.pop(mod, None)
-    from pmb.mcp.server import build_server
+    from lume.mcp.server import build_server
     m = build_server(prewarm=False)
     tools = asyncio.run(m.list_tools())
     return len(tools), sum(len(t.description or "") for t in tools)
@@ -38,7 +38,7 @@ def _restore_env():
             os.environ.pop(k, None)
         else:
             os.environ[k] = v
-    for mod in ("pmb.mcp.server", "pmb.mcp._toolspec"):
+    for mod in ("lume.mcp.server", "lume.mcp._toolspec", "pmb.mcp.server", "pmb.mcp._toolspec"):
         sys.modules.pop(mod, None)
 
 
@@ -61,9 +61,9 @@ def test_minimal_profile_smallest():
 
 def test_short_descriptions_present_and_bounded():
     # toolspec was reloaded by the helper; import fresh
-    sys.modules.pop("pmb.mcp._toolspec", None)
+    sys.modules.pop("lume.mcp._toolspec", None)
     os.environ["PMB_TOOL_PROFILE"] = "default"
-    from pmb.mcp._toolspec import _SHORT_DESC
+    from lume.mcp._toolspec import _SHORT_DESC
     # the heaviest tools must have a compact override
     for name in ("record_batch", "prepare", "recall", "record_fact",
                  "record_fact_tree", "recall_smart", "project_overview"):
@@ -73,6 +73,6 @@ def test_short_descriptions_present_and_bounded():
         assert 20 <= len(desc) <= 600, f"{name} short desc len={len(desc)}"
     # full profile keeps the docstring (returns None → use __doc__)
     os.environ["PMB_TOOL_PROFILE"] = "full"
-    sys.modules.pop("pmb.mcp._toolspec", None)
-    from pmb.mcp._toolspec import short_description as sd_full
+    sys.modules.pop("lume.mcp._toolspec", None)
+    from lume.mcp._toolspec import short_description as sd_full
     assert sd_full("record_batch") is None

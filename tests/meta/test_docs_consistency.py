@@ -34,6 +34,18 @@ def test_version_is_consistent_across_init_pyproject_changelog():
         f"newest CHANGELOG [{released[0]}] != __version__ {code_v}")
 
 
+def test_lume_brand_and_legacy_entrypoints_are_declared():
+    import tomllib
+
+    metadata = tomllib.loads(_read("pyproject.toml"))
+    assert metadata["project"]["name"] == "lume-memory"
+    scripts = metadata["project"]["scripts"]
+    assert scripts["lume"] == "lume.cli:app"
+    assert scripts["lume-mcp"] == "lume.mcp.server:main"
+    assert scripts["pmb"] == "lume.cli:app"
+    assert scripts["pmb-mcp"] == "lume.mcp.server:main"
+
+
 def test_every_config_key_has_a_description():
     from pmb.config import SCHEMA
     blank = [k for k, s in SCHEMA.items()

@@ -14,11 +14,10 @@ import tempfile
 import time
 
 import pytest
-from typer.testing import CliRunner
-
 from pmb.cli._common import _parse_duration  # noqa: E402  (moved here in the split)
 from pmb.cli.main import app  # noqa: E402
 from pmb.core.events import Event  # noqa: E402
+from typer.testing import CliRunner
 
 runner = CliRunner()
 
@@ -179,7 +178,7 @@ def test_export_markdown_to_file(ws, tmp_path):
     r = runner.invoke(app, ["export", "--out", str(out)])
     assert r.exit_code == 0, r.output
     body = out.read_text(encoding="utf-8")
-    assert "# PMB memory export" in body
+    assert "# Lume memory export" in body
     assert "pnpm" in body
 
 

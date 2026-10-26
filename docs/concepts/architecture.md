@@ -1,13 +1,13 @@
 # Architecture
 
-This page explains what PMB is made of and how a request flows through it. For
+This page explains what Lume is made of and how a request flows through it. For
 the implementation-level Engine and storage schema, see
 [Core engine](core-engine.md). For the why behind the choices, see
 [Design and technology](design-and-tech.md).
 
 ## The one idea
 
-Reading memory should cost nothing. PMB injects the relevant memory into the
+Reading memory should cost nothing. Lume injects the relevant memory into the
 agent before the model thinks, with no LLM call on the read path. Recall is
 therefore free in tokens and fast, and it works the same in any language.
 
@@ -52,42 +52,42 @@ you run them.
 ## Components
 
 - **CLI (`pmb`)**, built on Typer. Commands for setup, connect, recall, delete,
-  the dashboard, the daemon, and maintenance. Source: `src/pmb/cli/`.
-- **MCP server (`pmb-mcp`)**, built on FastMCP. It exposes the memory tools over
+  the dashboard, the daemon, and maintenance. Source: `src/lume/cli/`.
+- **MCP server (`lume-mcp`)**, built on FastMCP. It exposes the memory tools over
   stdio (one process per agent) or streamable HTTP (one shared process). Tool
   profiles (minimal, lean, default, full) trim what the agent sees so the tool
-  list stays small. Source: `src/pmb/mcp/server.py`, `_toolspec.py`.
-- **Warm daemon (`pmb daemon`)**. One process that holds a warm Engine, the
+  list stays small. Source: `src/lume/mcp/server.py`, `_toolspec.py`.
+- **Warm daemon (`lume daemon`)**. One process that holds a warm Engine, the
   embedding model, and the vector store, served over local HTTP with a bearer
   token plus a few internal hook routes. It can idle-exit, and it registers
   itself in a small JSON registry so hooks and the proxy can find it. Source:
-  `src/pmb/mcp/daemon.py`.
-- **Proxy (`pmb mcp proxy`)**. A light stdio to daemon bridge for stdio only
+  `src/lume/mcp/daemon.py`.
+- **Proxy (`lume mcp proxy`)**. A light stdio to daemon bridge for stdio only
   hosts such as Codex. It holds no model and forwards to the one daemon, which
-  removes the per session cold start. Source: `src/pmb/cli/commands/hooks.py`.
+  removes the per session cold start. Source: `src/lume/cli/commands/hooks.py`.
 - **Lifecycle hooks**. The host runs these at fixed points and folds their
-  output into the model context. Source: `src/pmb/cli/hooks.py`,
-  `src/pmb/hooks/`.
+  output into the model context. Source: `src/lume/cli/hooks.py`,
+  `src/lume/hooks/`.
 - **Dashboard**. A stdlib HTTP server plus a single page of vanilla HTML, CSS,
   and JavaScript (the entity map uses vis-network). It binds to `127.0.0.1`
-  only. Source: `src/pmb/dashboard/`.
+  only. Source: `src/lume/dashboard/`.
 
 ## Lifecycle hooks
 
-For Claude Code, PMB installs the full set:
+For Claude Code, Lume installs the full set:
 
 | Event | What runs | Purpose |
 |---|---|---|
-| UserPromptSubmit | `pmb-hook prepare-context` | inject relevant memory before the model thinks (auto recall) |
-| SessionStart | `pmb-hook session-restore` | rebuild where you left off after a compaction or resume |
-| PreToolUse | `pmb-hook pretool` | surface a matching rule before a tool call (advisory, never blocks) |
-| PostToolUse | `pmb-hook track-action` | observe the action for ambient memory |
-| Stop | `pmb-hook lesson-followcheck` and `autowrite` | score lesson follow through, and journal the turn if the agent did not |
+| UserPromptSubmit | `lume-hook prepare-context` | inject relevant memory before the model thinks (auto recall) |
+| SessionStart | `lume-hook session-restore` | rebuild where you left off after a compaction or resume |
+| PreToolUse | `lume-hook pretool` | surface a matching rule before a tool call (advisory, never blocks) |
+| PostToolUse | `lume-hook track-action` | observe the action for ambient memory |
+| Stop | `lume-hook lesson-followcheck` and `autowrite` | score lesson follow through, and journal the turn if the agent did not |
 
 Codex has no per turn or session shell hook. Its one extension point is
-`notify`, fired when a turn completes, wired to `pmb codex-notify`. That gives
+`notify`, fired when a turn completes, wired to `lume codex-notify`. That gives
 ambient auto write by reading the Codex rollout log. Read first and recall for
-Codex come from the AGENTS.md rules that `pmb connect codex` installs, so the
+Codex come from the AGENTS.md rules that `lume connect codex` installs, so the
 agent calls `prepare` and `recall` itself.
 
 ## The read path, per message
@@ -97,7 +97,7 @@ sequenceDiagram
   autonumber
   participant User
   participant Host as Agent host
-  participant Hook as pmb-hook
+  participant Hook as lume-hook
   participant Daemon as Warm daemon
   participant Engine
 
@@ -112,7 +112,7 @@ sequenceDiagram
 ```
 
 1. The host fires UserPromptSubmit with the user message.
-2. `pmb-hook` posts it to the daemon route `/internal/hook/prepare-context`.
+2. `lume-hook` posts it to the daemon route `/internal/hook/prepare-context`.
 3. The Engine classifies the message, runs hybrid recall, gathers lessons,
    decisions, and project context, applies the precision gates, and returns one
    compact block of text.
@@ -157,7 +157,7 @@ is genuinely relevant, which is what stops small talk from pulling in noise.
 
 ## Storage layout
 
-- `~/.pmb/` holds the global config, the daemon token, the server registry, and
+- `~/.lume/` holds the global config, the daemon token, the server registry, and
   the per workspace data.
 - Each workspace has a SQLite database (events, the entity graph, event edges,
   tool call metrics, dedup candidates, and schema migrations) and a LanceDB
@@ -171,9 +171,9 @@ is genuinely relevant, which is what stops small talk from pulling in noise.
 
 | Area | Path |
 |---|---|
-| Engine (write, recall, health, ambient) | `src/pmb/core/engine/` |
-| Event and vector stores | `src/pmb/core/events.py`, `src/pmb/core/search.py` |
-| MCP server, daemon, tools, registry | `src/pmb/mcp/` |
-| Hooks (installer and logic) | `src/pmb/cli/hooks.py`, `src/pmb/hooks/` |
-| Dashboard | `src/pmb/dashboard/` |
-| CLI commands | `src/pmb/cli/` |
+| Engine (write, recall, health, ambient) | `src/lume/core/engine/` |
+| Event and vector stores | `src/lume/core/events.py`, `src/lume/core/search.py` |
+| MCP server, daemon, tools, registry | `src/lume/mcp/` |
+| Hooks (installer and logic) | `src/lume/cli/hooks.py`, `src/lume/hooks/` |
+| Dashboard | `src/lume/dashboard/` |
+| CLI commands | `src/lume/cli/` |

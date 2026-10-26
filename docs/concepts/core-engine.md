@@ -1,12 +1,12 @@
 # Core engine
 
-This page describes the part of PMB that actually stores, ranks, and serves
+This page describes the part of Lume that actually stores, ranks, and serves
 memory. It is the implementation-level companion to [Architecture](architecture.md)
 and [How it works](how-it-works.md).
 
 ## What the Engine owns
 
-`src/pmb/core/engine/base.py` builds one `Engine` per workspace. The class is
+`src/lume/core/engine/base.py` builds one `Engine` per workspace. The class is
 composed from focused mixins instead of one giant file, but the object owns the
 same runtime resources:
 
@@ -24,8 +24,8 @@ flowchart LR
 
 The constructor does the minimum needed to make commands responsive: it opens
 SQLite immediately, but BM25, LanceDB, embedding models, rerankers, and graph
-boost caches are lazy where possible. That is why commands such as `pmb stats`
-and `pmb config` do not pay the vector-store cold start.
+boost caches are lazy where possible. That is why commands such as `lume stats`
+and `lume config` do not pay the vector-store cold start.
 
 <div class="pmb-widget-grid" markdown>
 <div markdown>
@@ -68,14 +68,15 @@ sequenceDiagram
   Engine-->>Caller: ready for CLI, MCP, hooks, or dashboard
 ```
 
-Workspace detection is deterministic. PMB checks explicit arguments, then
-`PMB_WORKSPACE`, then `.pmb/workspace.yaml`, persisted defaults, git remote,
+Workspace detection is deterministic. Lume checks explicit arguments, then
+`LUME_WORKSPACE`, then `.lume/workspace.yaml` (also recognizes legacy
+`.pmb/workspace.yaml`), persisted defaults, git remote,
 git root path, and finally the current directory path. Storage lands in
-`~/.pmb/workspaces/<workspace-id>/`.
+`~/.lume/workspaces/<workspace-id>/`.
 
 ## Storage schema
 
-PMB uses SQLite as the source of truth and LanceDB as the vector side index.
+Lume uses SQLite as the source of truth and LanceDB as the vector side index.
 The active SQLite file is `events.sqlite`; the vector directory is beside it.
 
 | Store | Table or file | Purpose |
@@ -141,12 +142,12 @@ flowchart LR
 ```
 
 The hot path does not call an LLM. Optional LLM work happens at write time,
-maintenance time, or for explicit commands such as `pmb consolidate`,
-`pmb reflect`, `pmb distill`, and `pmb dedupe --run-pending`.
+maintenance time, or for explicit commands such as `lume consolidate`,
+`lume reflect`, `lume distill`, and `lume dedupe --run-pending`.
 
 ## Concurrency and durability
 
-PMB is designed for several local clients touching one workspace at once.
+Lume is designed for several local clients touching one workspace at once.
 
 <div class="pmb-note-grid" markdown>
 <div markdown>
@@ -171,9 +172,9 @@ PMB is designed for several local clients touching one workspace at once.
 
 | Mode | Transport | What runs |
 |---|---|---|
-| Local default | Local daemon plus HTTP, with stdio proxy where needed | One warm runtime on your machine. Claude Code and Cursor can point at the daemon directly; Codex uses `pmb mcp proxy`. |
+| Local default | Local daemon plus HTTP, with stdio proxy where needed | One warm runtime on your machine. Claude Code and Cursor can point at the daemon directly; Codex uses `lume mcp proxy`. |
 | Local stdio fallback | stdio | One per-client server process. Useful for compatibility, but it can pay more cold-start cost. |
-| Team or multi-machine | streamable HTTP | `pmb mcp serve --transport streamable-http --host 0.0.0.0 --bearer-token <secret>` exposes one shared server to remote agents. |
+| Team or multi-machine | streamable HTTP | `lume mcp serve --transport streamable-http --host 0.0.0.0 --bearer-token <secret>` exposes one shared server to remote agents. |
 
 The team mode is the only mode that should listen beyond localhost. Use a bearer
 token, and put it behind a private network such as Tailscale or an SSH tunnel.
@@ -182,16 +183,16 @@ token, and put it behind a private network such as Tailscale or an SSH tunnel.
 
 | Concern | Source |
 |---|---|
-| Engine composition | `src/pmb/core/engine/base.py` |
-| Write, batch, recall, lessons, goals, health | `src/pmb/core/engine/` |
-| Event schema and archive/delete lifecycle | `src/pmb/core/events.py` |
-| BM25, LanceDB, embedding backends | `src/pmb/core/search.py` |
-| Durable embed queue | `src/pmb/core/embed_queue.py` |
-| Workspace detection and storage paths | `src/pmb/core/workspace.py` |
-| Entity graph storage | `src/pmb/graph/store.py` |
-| MCP tools and server | `src/pmb/mcp/tools.py`, `src/pmb/mcp/server.py` |
-| Warm daemon and proxy | `src/pmb/mcp/daemon.py`, `src/pmb/cli/commands/hooks.py` |
-| CLI command groups | `src/pmb/cli/commands/` |
+| Engine composition | `src/lume/core/engine/base.py` |
+| Write, batch, recall, lessons, goals, health | `src/lume/core/engine/` |
+| Event schema and archive/delete lifecycle | `src/lume/core/events.py` |
+| BM25, LanceDB, embedding backends | `src/lume/core/search.py` |
+| Durable embed queue | `src/lume/core/embed_queue.py` |
+| Workspace detection and storage paths | `src/lume/core/workspace.py` |
+| Entity graph storage | `src/lume/graph/store.py` |
+| MCP tools and server | `src/lume/mcp/tools.py`, `src/lume/mcp/server.py` |
+| Warm daemon and proxy | `src/lume/mcp/daemon.py`, `src/lume/cli/commands/hooks.py` |
+| CLI command groups | `src/lume/cli/commands/` |
 
 ## Snapshot and maintenance APIs
 

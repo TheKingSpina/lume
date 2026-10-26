@@ -14,7 +14,7 @@
 # run time. Without the NVIDIA runtime, `run`/`up` will fail to start.
 
 x-pmb-gpu: &pmb-gpu
-  image: pmb:gpu
+  image: lume:gpu
   build:
     args:
       TORCH_VARIANT: cuda

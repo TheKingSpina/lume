@@ -113,10 +113,10 @@ def test_codex_connect_end_to_end(tmp_path, monkeypatch):
     assert loaded["model"] == "gpt-5"
     assert "marketplaces" in loaded
     assert "node_repl" in loaded["mcp_servers"]
-    assert "pmb" in loaded["mcp_servers"]
-    pmb_entry = loaded["mcp_servers"]["pmb"]
-    assert "command" in pmb_entry
-    assert pmb_entry["env"]["PMB_CWD"].endswith("myproject")
+    assert "lume" in loaded["mcp_servers"]
+    lume_entry = loaded["mcp_servers"]["lume"]
+    assert "command" in lume_entry
+    assert lume_entry["env"]["LUME_CWD"].endswith("myproject")
 
 
 def test_codex_with_shared_workspace(tmp_path, monkeypatch):

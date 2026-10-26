@@ -10,7 +10,8 @@ ARG TORCH_VARIANT=cpu
 
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    HOME=/home/pmb \
+    HOME=/home/lume \
+    LUME_HOME=/data \
     PMB_HOME=/data \
     HF_HOME=/hf-cache \
     SENTENCE_TRANSFORMERS_HOME=/hf-cache
@@ -19,22 +20,22 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -g "${GID}" pmb \
-    && useradd -m -u "${UID}" -g "${GID}" -s /bin/bash pmb \
+RUN groupadd -g "${GID}" lume \
+    && useradd -m -u "${UID}" -g "${GID}" -s /bin/bash lume \
     && mkdir -p /data /hf-cache /app \
-    && chown -R pmb:pmb /data /hf-cache /app \
+    && chown -R lume:lume /data /hf-cache /app \
     # World-writable so the container works under any runtime UID (compose sets
     # `user:` to the host's id), incl. fresh named volumes that inherit these.
-    && chmod -R 0777 /data /hf-cache /home/pmb
+    && chmod -R 0777 /data /hf-cache /home/lume
 
 WORKDIR /app
 
 # Install dependencies first for better layer caching. The source is baked in
-# so the image works on its own (`docker run pmb:local pmb ...`). Under compose we
+# so the image works on its own (`docker run lume:local lume ...`). Under compose we
 # bind-mount the repo over /app, so the editable install then picks up live
 # host edits instead of this baked copy.
-COPY --chown=pmb:pmb pyproject.toml README.md ./
-COPY --chown=pmb:pmb src ./src
+COPY --chown=lume:lume pyproject.toml README.md ./
+COPY --chown=lume:lume src ./src
 
 # For the CPU build, pre-install the CPU-only torch from PyTorch's cpu index
 # so the editable install below finds torch already satisfied and does NOT
@@ -46,6 +47,6 @@ RUN pip install --upgrade pip \
        fi \
     && pip install -e ".[dev]"
 
-USER pmb
+USER lume
 
 CMD ["bash"]

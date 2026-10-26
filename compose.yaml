@@ -1,17 +1,18 @@
-# PMB containerized runtime.
+# Lume containerized runtime (legacy PMB command/environment aliases supported).
 #
 # One image, three run profiles over a single data volume. The host install
-# is never touched: PMB_HOME points at ./docker/data (not ~/.pmb) and the
-# heavy HuggingFace model cache lives in a named volume so rebuilds don't
+# is never touched: LUME_HOME points at ./docker/data and legacy PMB_HOME
+# resolves to the same location; the heavy HuggingFace model cache lives in a
+# named volume so rebuilds don't
 # re-download it.
 #
 # Usage:
 #   docker compose run --rm shell                 # dev sandbox (pip/python/pytest)
-#   docker compose --profile dashboard up         # web dashboard on :8765
+#   docker compose --profile dashboard up         # web dashboard on :8766
 #   docker compose run --rm -i mcp                # MCP server over stdio (for agents)
 # Or via the Makefile: make docker-shell / docker-dashboard / docker-mcp
 
-x-pmb-common: &pmb-common
+x-lume-common: &lume-common
   build:
     context: .
     dockerfile: docker/Dockerfile
@@ -19,14 +20,15 @@ x-pmb-common: &pmb-common
       UID: ${UID:-1000}
       GID: ${GID:-1000}
       TORCH_VARIANT: ${TORCH_VARIANT:-cpu}   # cpu (default) — GPU via docker/compose.gpu.yaml
-  image: pmb:local
+  image: lume:local
   user: "${UID:-1000}:${GID:-1000}"
   environment:
+    LUME_HOME: /data
     PMB_HOME: /data
     HF_HOME: /hf-cache
     SENTENCE_TRANSFORMERS_HOME: /hf-cache
   volumes:
-    - ./docker/data:/data        # PMB_HOME — SQLite + LanceDB + BM25 live here
+    - ./docker/data:/data        # LUME_HOME / legacy PMB_HOME — workspace data
     - pmb_hf_cache:/hf-cache      # embedding models (downloaded once)
     - .:/app                      # live source for editable installs
   working_dir: /app
@@ -34,28 +36,61 @@ x-pmb-common: &pmb-common
 services:
   # Interactive development sandbox: run pmb commands, pip, pytest, ruff.
   shell:
-    <<: *pmb-common
+    <<: *lume-common
     profiles: ["dev"]
     stdin_open: true
     tty: true
     command: ["bash"]
 
-  # Web dashboard. Bound to localhost on the host side only.
+  # Web dashboard. Loopback by default; remote access can be limited to the
+  # host's Tailscale interface via LUME_DASHBOARD_BIND_ADDRESS.
   dashboard:
-    <<: *pmb-common
+    <<: *lume-common
     profiles: ["dashboard"]
-    command: ["pmb", "dashboard", "--host", "0.0.0.0", "--port", "8765"]
+    command: ["lume", "dashboard", "--host", "0.0.0.0", "--port", "8765"]
     ports:
-      - "127.0.0.1:8765:8765"
+      - "${LUME_DASHBOARD_BIND_ADDRESS:-127.0.0.1}:${LUME_DASHBOARD_PORT:-8766}:8765"
 
   # MCP server over stdio. Intended for `docker compose run --rm -i mcp`
   # wired into an agent's MCP config (see docker/README.md).
   mcp:
-    <<: *pmb-common
+    <<: *lume-common
     profiles: ["mcp"]
     stdin_open: true
     tty: false
-    command: ["pmb-mcp"]
+    command: ["lume-mcp"]
+
+  # Persistent MCP endpoint for local or remote clients. Host binding is
+  # loopback-only by default; for remote use, set it to the server's Tailscale
+  # IPv4 address and keep bearer authentication enabled.
+  mcp-http:
+    <<: *lume-common
+    profiles: ["server"]
+    command:
+      - lume
+      - mcp
+      - serve
+      - --transport
+      - streamable-http
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8765"
+      - --bearer-token
+      - ${LUME_MCP_BEARER_TOKEN:-${PMB_MCP_BEARER_TOKEN:-}}
+    ports:
+      - "${LUME_MCP_BIND_ADDRESS:-${PMB_MCP_BIND_ADDRESS:-127.0.0.1}}:${LUME_MCP_PORT:-${PMB_MCP_PORT:-8765}}:8765"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/healthz', timeout=2)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 volumes:
   pmb_hf_cache:

@@ -173,7 +173,7 @@ def test_cold_cli_decodes_child_stdout_as_utf8(monkeypatch):
     # the child is also told to emit UTF-8 (belt-and-suspenders across hosts)
     assert seen.get("env", {}).get("PYTHONIOENCODING") == "utf-8"
     # SAC-safe: the cold fallback runs the SIGNED interpreter, not pmb.exe
-    assert seen["cmd"][:3] == [sys.executable, "-m", "pmb.cli"]
+    assert seen["cmd"][:3] == [sys.executable, "-m", "lume.cli"]
 
 
 # ── daemon-served prepare-context against a stub server ─────────────

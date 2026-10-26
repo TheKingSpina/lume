@@ -7,7 +7,7 @@ flag, or configuration key.
 flowchart LR
   Task["Task"] --> Command["Command reference"]
   Task --> Config["Configuration"]
-  Command --> Run["Run pmb command"]
+  Command --> Run["Run lume command"]
   Config --> Tune["Tune behavior"]
   Run --> Verify["doctor, stats, dashboard"]
   Tune --> Verify
@@ -17,7 +17,7 @@ flowchart LR
 
 -   **Commands**
 
-    Every PMB command grouped by setup, capture, recall, lifecycle, sync, and UI.
+    Every Lume command grouped by setup, capture, recall, lifecycle, sync, and UI.
 
     [Open the command reference →](COMMANDS.md)
 
@@ -40,9 +40,9 @@ flowchart LR
 
 | Task | Start with |
 |---|---|
-| Wire PMB into an agent | `pmb setup` or `pmb connect <agent>` |
-| Check install health | `pmb doctor` |
-| Search memory manually | `pmb recall "query"` |
-| Inspect memory visually | `pmb dashboard` |
-| Change model profile | `pmb model` |
-| Tune behavior | `pmb config list` |
+| Wire Lume into an agent | `lume setup` or `lume connect <agent>` |
+| Check install health | `lume doctor` |
+| Search memory manually | `lume recall "query"` |
+| Inspect memory visually | `lume dashboard` |
+| Change model profile | `lume model` |
+| Tune behavior | `lume config list` |

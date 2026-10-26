@@ -1,83 +1,76 @@
-"""Personal Memory Brain - local memory for AI agents.
+"""Compatibility namespace for the historic ``pmb`` Python package.
 
-Importing this package is intentionally lightweight: we only set a few
-environment defaults and silence noisy third-party loggers. The heavy
-machinery (`Engine`, `Workspace`, `detect_workspace`) is loaded lazily
-via PEP 562 `__getattr__` so that:
-
-  - `import pmb`                       does NOT load LanceDB / sentence-transformers / numpy / rank_bm25 / fastmcp
-  - `from pmb import Engine`           DOES (transitively, on access)
-  - `from pmb.security.redact import redact`   stays lightweight
-
-This keeps short-lived CLI invocations fast and keeps the import graph
-in tests predictable.
+New integrations should import :mod:`lume`. Submodules requested through
+``pmb`` are resolved to the same canonical ``lume`` module objects.
 """
-
 from __future__ import annotations
 
-__version__ = "1.3.0"
+import importlib
+import importlib.abc
+import importlib.util
+import sys
 
-# ---------------------------------------------------------------------------
-# Quiet third-party noise BEFORE any heavy module gets a chance to import.
-# These environment defaults are read by sentence-transformers, huggingface_hub
-# and transformers when they initialise. We must set them at module load time
-# so they are in place no matter when (or if) those modules are imported.
-# ---------------------------------------------------------------------------
-import os as _os
-import warnings as _warnings
-
-_os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
-_os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
-_os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
-_os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
-
-# huggingface_hub emits a UserWarning about unauthenticated requests on each
-# model download; we don't need a token for the open MiniLM model.
-_warnings.filterwarnings(
-    "ignore",
-    message=".*unauthenticated requests.*",
-    category=UserWarning,
-)
-
-# Silence the underlying logger too - some versions emit via logging, not warnings.
-import logging as _logging
-
-for _name in ("huggingface_hub", "huggingface_hub.utils._http", "transformers"):
-    _logging.getLogger(_name).setLevel(_logging.ERROR)
-del _logging, _name
-del _os, _warnings
+_lume = importlib.import_module("lume")
+__version__ = _lume.__version__
+__all__ = _lume.__all__
 
 
-# ---------------------------------------------------------------------------
-# Public surface (lazy). Anything listed here is reachable via
-# `pmb.<name>` or `from pmb import <name>`, but the underlying module
-# is only imported the first time the attribute is accessed.
-# ---------------------------------------------------------------------------
-__all__ = ["Engine", "Workspace", "detect_workspace", "__version__"]
+class _LegacyNamespaceLoader(importlib.abc.Loader):
+    def __init__(self, target: str):
+        self.target = target
+
+    def create_module(self, spec):
+        return importlib.import_module(self.target)
+
+    def exec_module(self, module):
+        # create_module returns the already initialized canonical module.
+        return None
+
+    def get_code(self, fullname):
+        spec = importlib.util.find_spec(self.target)
+        if spec is None or spec.loader is None:
+            return None
+        get_code = getattr(spec.loader, "get_code", None)
+        return get_code(self.target) if get_code is not None else None
+
+    def get_source(self, fullname):
+        spec = importlib.util.find_spec(self.target)
+        if spec is None or spec.loader is None:
+            return None
+        get_source = getattr(spec.loader, "get_source", None)
+        return get_source(self.target) if get_source is not None else None
 
 
-_LAZY_ATTRS: dict[str, tuple[str, str]] = {
-    # attribute name -> (module, attr in module)
-    "Engine":           ("pmb.core.engine",    "Engine"),
-    "Workspace":        ("pmb.core.workspace", "Workspace"),
-    "detect_workspace": ("pmb.core.workspace", "detect_workspace"),
-}
+class _LegacyNamespaceFinder(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if not fullname.startswith("pmb."):
+            return None
+        canonical = "lume." + fullname[4:]
+        try:
+            target_spec = importlib.util.find_spec(canonical)
+        except (ImportError, ModuleNotFoundError, ValueError):
+            return None
+        if target_spec is None:
+            return None
+        return importlib.util.spec_from_loader(
+            fullname,
+            _LegacyNamespaceLoader(canonical),
+            origin=target_spec.origin,
+            is_package=target_spec.submodule_search_locations is not None,
+        )
+
+
+if not any(isinstance(finder, _LegacyNamespaceFinder) for finder in sys.meta_path):
+    sys.meta_path.insert(0, _LegacyNamespaceFinder())
+
+# Force the legacy alias to use the finder rather than searching an independent
+# package tree and loading duplicate ``pmb.*`` modules.
+__path__ = []
 
 
 def __getattr__(name: str):
-    """PEP 562 lazy attribute access. Imports heavy modules on demand."""
-    target = _LAZY_ATTRS.get(name)
-    if target is None:
-        raise AttributeError(f"module 'pmb' has no attribute {name!r}")
-    module_name, attr = target
-    import importlib
-    module = importlib.import_module(module_name)
-    value = getattr(module, attr)
-    # Cache on the package so subsequent accesses skip __getattr__.
-    globals()[name] = value
-    return value
+    return getattr(_lume, name)
 
 
 def __dir__() -> list[str]:
-    """Make tab-completion / dir() still show the lazy names."""
-    return sorted(list(globals().keys()) + list(_LAZY_ATTRS.keys()))
+    return sorted(set(globals()) | set(dir(_lume)))

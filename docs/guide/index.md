@@ -1,11 +1,11 @@
 # Guide
 
-Use this section when you want to get PMB running, connect an agent, inspect
+Use this section when you want to get Lume running, connect an agent, inspect
 memory, or manage data.
 
 ``` mermaid
 flowchart LR
-  Install["Install PMB"] --> Setup["Run pmb setup"]
+  Install["Install Lume"] --> Setup["Run lume setup"]
   Setup --> Restart["Restart your agent"]
   Restart --> Work["Work normally"]
   Work --> Inspect["Open dashboard or recall"]
@@ -16,7 +16,7 @@ flowchart LR
 
 -   **Getting started**
 
-    Install PMB and wire your first agent in a few minutes.
+    Install Lume and wire your first agent in a few minutes.
 
     [Start here →](getting-started.md)
 
@@ -46,4 +46,4 @@ flowchart LR
 2. Connect each agent you use with [Usage](usage.md).
 3. Open the [Dashboard](dashboard.md) once so you know where your data lives.
 4. Keep [Commands](../reference/COMMANDS.md) nearby for lookup.
-5. If something is off, run `pmb doctor` and check [Troubleshooting](troubleshooting.md).
+5. If something is off, run `lume doctor` and check [Troubleshooting](troubleshooting.md).

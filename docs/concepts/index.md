@@ -1,6 +1,6 @@
 # Concepts
 
-These pages explain what PMB is made of, how memory moves through the system,
+These pages explain what Lume is made of, how memory moves through the system,
 and why the design is local-first.
 
 ``` mermaid
@@ -31,7 +31,7 @@ flowchart TB
 
 -   **Memory model**
 
-    The kinds of memory PMB keeps, keyed facts, importance, tiers, and decay.
+    The kinds of memory Lume keeps, keyed facts, importance, tiers, and decay.
 
     [See the memory model →](memory-model.md)
 
@@ -43,7 +43,7 @@ flowchart TB
 
 -   **Design and technology**
 
-    The design patterns, tradeoffs, and stack choices behind PMB.
+    The design patterns, tradeoffs, and stack choices behind Lume.
 
     [See the decisions →](design-and-tech.md)
 

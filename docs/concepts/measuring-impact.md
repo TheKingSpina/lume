@@ -1,9 +1,9 @@
-# Does PMB actually help - and how we measure it honestly
+# Does Lume actually help - and how we measure it honestly
 
 Most memory tools assert that they improve your agent and back it with one
-flattering number. PMB takes the opposite stance: **measure it conservatively,
+flattering number. Lume takes the opposite stance: **measure it conservatively,
 on _your_ data, and say loudly when the signal isn't trustworthy yet.** A memory
-system you can't measure is one you can't trust - so when PMB says a lesson
+system you can't measure is one you can't trust - so when Lume says a lesson
 "helps", it has earned the word.
 
 There are two different questions hiding inside "does it help?", and they need
@@ -18,7 +18,7 @@ two different methods.
 
 ## 1. Retrieval quality - benchmarks
 
-Can PMB surface the relevant memory at all? This is a search problem with
+Can Lume surface the relevant memory at all? This is a search problem with
 established benchmarks, and the numbers are reproducible on your machine - no
 trust required:
 
@@ -30,7 +30,7 @@ python scripts/benchmarks/mega_stress_test.py
 - **LoCoMo recall@10 ≈ 94.5%** (long-conversation QA)
 - **Multilingual top-10 ≈ 99.2%** across ~11 languages
 
-**Honest limit:** a retrieval benchmark proves PMB _finds_ the memory. It does
+**Honest limit:** a retrieval benchmark proves Lume _finds_ the memory. It does
 **not** prove that having it changed what your agent did. That is the harder
 question, and it needs the next method.
 
@@ -38,7 +38,7 @@ question, and it needs the next method.
 
 ## 2. Earned Memory - does memory change outcomes?
 
-PMB already records two things as you work, with no extra LLM call:
+Lume already records two things as you work, with no extra LLM call:
 
 1. **Which lessons were active** during each agent action (`surface_ids`).
 2. **The outcome of each turn**, classified model-free from the actions
@@ -46,7 +46,7 @@ PMB already records two things as you work, with no extra LLM call:
 
 Joining the two answers "when this lesson was in front of the agent, did the
 turn go better?" - the thing that otherwise needs a manual A/B. The join runs
-entirely over existing tables (`pmb health lessons-impact` /
+entirely over existing tables (`lume health lessons-impact` /
 the `lesson_impact` MCP tool).
 
 The catch is that a naïve join lies in three ways, so Earned Memory is built in
@@ -89,7 +89,7 @@ their Wilson CIs separate; otherwise `inconclusive` / `insufficient`. Fields:
 
 ---
 
-## What PMB will not do
+## What Lume will not do
 
 **An untrustworthy metric never drives behaviour.** Earned Memory is
 measurement-only: it does not feed ranking or decay until the outcome signal is
@@ -112,7 +112,7 @@ These are in the harness's own `caveat` field, not buried:
 ## Run it on your own data
 
 ```bash
-pmb health lessons-impact -w 90
+lume health lessons-impact -w 90
 ```
 
 Read it like this:
@@ -123,11 +123,11 @@ Read it like this:
 - A lesson only earns **`useful`/`helps`** once the statistics back it.
 - Worst-lift-first ordering surfaces dead-weight or harmful rules for review.
 
-That is the whole philosophy in one screen: PMB tells you what it can prove,
+That is the whole philosophy in one screen: Lume tells you what it can prove,
 flags what it can't, and never dresses up noise as a result.
 
 ---
 
 See also: [How it works](how-it-works.md) ·
 [Core engine](core-engine.md) ·
-[`pmb health lessons-impact`](../reference/COMMANDS.md)
+[`lume health lessons-impact`](../reference/COMMANDS.md)

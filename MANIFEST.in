@@ -29,8 +29,9 @@ recursive-include tests *.py
 include tests/conftest.py
 
 # Package data
-recursive-include src/pmb py.typed
-recursive-include src/pmb/dashboard/static *
+recursive-include src/lume py.typed
+recursive-include src/lume/dashboard/static *
+include src/pmb/__init__.py
 
 # Exclude development artefacts
 global-exclude __pycache__
