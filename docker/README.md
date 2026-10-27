@@ -164,6 +164,27 @@ expose plain HTTP to the public internet; for internet-facing deployments use
 HTTPS behind a trusted reverse proxy. To stop Lume, run
 `docker compose --profile server down` (the dashboard is a separate profile).
 
+### Browser-hosted MCP clients
+
+Browser clients require HTTPS and a CORS allowlist. Keep the MCP listener on
+its Tailscale-only HTTP port, set the browser application's exact origin in
+`.env`, and publish the MCP path through Tailscale Serve (the `--set-path`
+route is additive to any existing Serve paths):
+
+```dotenv
+LUME_MCP_CORS_ORIGINS=https://agent.example.com
+```
+
+```bash
+tailscale serve --bg --set-path=/mcp http://127.0.0.1:8765
+tailscale serve status
+```
+
+Use the HTTPS MagicDNS URL reported for the machine, ending in `/mcp`, as the
+browser client's endpoint. The browser must be able to access the tailnet. Only
+the configured exact web origin receives CORS permission; do not use `*`.
+Restart the MCP service after changing the origin setting.
+
 To connect a host-side Lume installation to the shared endpoint, run:
 
 ```bash

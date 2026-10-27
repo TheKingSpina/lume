@@ -25,6 +25,7 @@ x-lume-common: &lume-common
   environment:
     LUME_HOME: /data
     PMB_HOME: /data
+    LUME_MCP_CORS_ORIGINS: ${LUME_MCP_CORS_ORIGINS:-}
     HF_HOME: /hf-cache
     SENTENCE_TRANSFORMERS_HOME: /hf-cache
   volumes:

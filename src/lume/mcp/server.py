@@ -564,6 +564,43 @@ def _build_bearer_middleware(token: str):
     return _BearerAuthMiddleware
 
 
+def _install_cors_middleware(app, origins: str | None = None) -> None:
+    """Enable browser access for explicitly trusted origins only.
+
+    Set ``LUME_MCP_CORS_ORIGINS`` to a comma-separated list of origins, for
+    example ``https://agent.example``. CORS is disabled when the list is
+    empty; wildcard origins are deliberately rejected for this authenticated
+    endpoint.
+    """
+    configured = (
+        os.environ.get("LUME_MCP_CORS_ORIGINS", "") if origins is None else origins
+    )
+    allowed_origins = [
+        origin.strip().rstrip("/")
+        for origin in configured.split(",")
+        if origin.strip()
+    ]
+    if not allowed_origins:
+        return
+    if "*" in allowed_origins:
+        raise ValueError(
+            "LUME_MCP_CORS_ORIGINS must list explicit origins; '*' is not allowed"
+        )
+
+    from starlette.middleware.cors import CORSMiddleware
+
+    # Added after bearer auth so Starlette places CORS outside auth and can
+    # answer preflight requests before they reach the MCP transport.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins,
+        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+        expose_headers=["Mcp-Session-Id", "Mcp-Protocol-Version", "WWW-Authenticate"],
+        max_age=600,
+    )
+
+
 def _install_health_routes(app) -> None:
     """Expose unauthenticated liveness endpoints on the HTTP MCP app."""
     from starlette.responses import JSONResponse
@@ -713,6 +750,11 @@ def main():
             sys.stderr.write(
                 f"[pmb-mcp] middleware install failed: {e} - server will run UNAUTHENTICATED\n"
             )
+
+    try:
+        _install_cors_middleware(app)
+    except Exception as e:
+        sys.stderr.write(f"[pmb-mcp] CORS middleware install failed: {e}\n")
 
     try:
         import uvicorn
