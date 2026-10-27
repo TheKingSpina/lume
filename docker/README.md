@@ -178,7 +178,7 @@ LUME_MCP_CORS_ORIGINS=https://agent.example.com
 ```
 
 ```bash
-tailscale serve --bg --set-path=/mcp http://127.0.0.1:18765
+tailscale serve --bg --set-path=/mcp http://127.0.0.1:18765/mcp
 tailscale serve status
 ```
 
