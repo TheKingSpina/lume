@@ -81,6 +81,7 @@ services:
       - ${LUME_MCP_BEARER_TOKEN:-${PMB_MCP_BEARER_TOKEN:-}}
     ports:
       - "${LUME_MCP_BIND_ADDRESS:-${PMB_MCP_BIND_ADDRESS:-127.0.0.1}}:${LUME_MCP_PORT:-${PMB_MCP_PORT:-8765}}:8765"
+      - "127.0.0.1:${LUME_MCP_LOOPBACK_PORT:-18765}:8765"
     restart: unless-stopped
     healthcheck:
       test:

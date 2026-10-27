@@ -169,14 +169,16 @@ HTTPS behind a trusted reverse proxy. To stop Lume, run
 Browser clients require HTTPS and a CORS allowlist. Keep the MCP listener on
 its Tailscale-only HTTP port, set the browser application's exact origin in
 `.env`, and publish the MCP path through Tailscale Serve (the `--set-path`
-route is additive to any existing Serve paths):
+route is additive to any existing Serve paths). Compose also publishes a
+loopback-only backend port (default `127.0.0.1:18765`) for Tailscale Serve; the
+existing Tailscale-IP listener remains available to other clients:
 
 ```dotenv
 LUME_MCP_CORS_ORIGINS=https://agent.example.com
 ```
 
 ```bash
-tailscale serve --bg --set-path=/mcp http://127.0.0.1:8765
+tailscale serve --bg --set-path=/mcp http://127.0.0.1:18765
 tailscale serve status
 ```
 
