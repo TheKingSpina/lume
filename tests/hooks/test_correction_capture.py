@@ -15,7 +15,6 @@ import json
 import sqlite3
 
 import pytest
-
 from pmb.hooks.correction_capture import (
     detect_correction,
     strong_lesson_matches,

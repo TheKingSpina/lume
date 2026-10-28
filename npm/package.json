@@ -24,13 +24,13 @@
     "cursor",
     "codex"
   ],
-  "homepage": "https://github.com/oleksiijko/pmb#readme",
+  "homepage": "https://github.com/TheKingSpina/lume#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oleksiijko/pmb.git"
+    "url": "git+https://github.com/TheKingSpina/lume.git"
   },
   "bugs": {
-    "url": "https://github.com/oleksiijko/pmb/issues"
+    "url": "https://github.com/TheKingSpina/lume/issues"
   },
   "license": "Apache-2.0",
   "engines": {

@@ -13,7 +13,6 @@ from __future__ import annotations
 import time
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.core.events import Event
 from pmb.reasoning.attributes import (

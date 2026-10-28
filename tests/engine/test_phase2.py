@@ -10,7 +10,6 @@ import time
 from pathlib import Path
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.core.workspace import detect_workspace
 from pmb.signals.decay import boost_on_recall

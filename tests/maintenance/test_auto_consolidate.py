@@ -4,7 +4,6 @@ from __future__ import annotations
 import time
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.health.auto_consolidate import (
     TriggerState,

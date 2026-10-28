@@ -8,7 +8,6 @@ ambiguous span yields NO keyed fact rather than a wrong one.
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.reasoning.extract_anchor import extract_keyed_anchor
 

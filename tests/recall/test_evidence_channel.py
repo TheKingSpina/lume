@@ -11,7 +11,6 @@ has no vectors, so raw_cosine is 0 and the gate is a no-op, as intended).
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.core.engine.types import RecallResult
 

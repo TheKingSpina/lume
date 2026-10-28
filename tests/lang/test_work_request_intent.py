@@ -9,7 +9,6 @@ a non-SKIP intent, so the always-on lessons + decisions side-dish runs.
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.hooks.auto_recall import Intent, detect_intents
 

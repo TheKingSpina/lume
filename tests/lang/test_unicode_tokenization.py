@@ -11,9 +11,8 @@ from __future__ import annotations
 
 import re
 
-import pytest
-
 import pmb.reasoning.pamvr as pamvr
+import pytest
 from pmb.reasoning.attributes import normalize_label
 from pmb.reasoning.fact_extract import _SENT_SPLIT
 from pmb.reasoning.vocab_miner import _TOKEN_RE

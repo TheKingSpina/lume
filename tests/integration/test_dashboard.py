@@ -8,7 +8,6 @@ import pytest
 from _http import get_json as _get_json
 from _http import get_text, wait_ready
 from _http import post_json as _post_json
-
 from pmb.core.engine import Engine
 from pmb.dashboard.server import make_handler
 

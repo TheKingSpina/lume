@@ -15,10 +15,9 @@ from __future__ import annotations
 import io
 
 import pytest
-from rich.console import Console
-
 from pmb.cli.main import app
 from pmb.cli.palette import command_catalog, rank, render_palette, score
+from rich.console import Console
 
 
 @pytest.fixture(scope="module")

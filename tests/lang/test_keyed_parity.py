@@ -7,7 +7,6 @@ already handle, only add coverage. Real embedder, loaded once.
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.reasoning.attributes import canonicalize_attribute, detect_current_state
 from pmb.reasoning.extract_anchor import extract_keyed_anchor

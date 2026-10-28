@@ -8,7 +8,6 @@ from __future__ import annotations
 import time
 
 import pytest
-
 from pmb.core.engine import Engine
 
 # Ceiling catches a PATHOLOGICAL regression (e.g. an accidental model reload per

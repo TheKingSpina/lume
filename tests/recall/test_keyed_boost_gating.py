@@ -10,7 +10,6 @@ retrievable; only the artificial boost is gated.
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 
 

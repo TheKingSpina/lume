@@ -14,7 +14,6 @@ import tempfile
 import time
 
 import pytest
-
 from pmb.core.engine import RecallResult  # noqa: E402
 from pmb.reasoning.fact_extract import extract_atomic_facts  # noqa: E402
 

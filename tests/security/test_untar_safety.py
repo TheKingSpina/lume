@@ -10,7 +10,6 @@ import io
 import tarfile
 
 import pytest
-
 from pmb.core.encryption import _untar_workspace
 
 

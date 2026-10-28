@@ -19,7 +19,6 @@ its floor and fails loudly, while normal embedder noise does not.
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 
 # ── frozen corpus: (lang, text) — index is the stable id ────────────────────

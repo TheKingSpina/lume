@@ -556,7 +556,7 @@ def _build_bearer_middleware(token: str):
             if not got or not hmac.compare_digest(got, expected):
                 return JSONResponse(
                     {"error": "unauthorized",
-                     "hint": "send `Authorization: Bearer <PMB_MCP_BEARER_TOKEN>`"},
+                     "hint": "send `Authorization: Bearer <LUME_MCP_BEARER_TOKEN>`"},
                     status_code=401,
                 )
             return await call_next(request)
@@ -594,6 +594,7 @@ def _install_cors_middleware(app, origins: str | None = None) -> None:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins,
+        allow_credentials=True,
         allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
         allow_headers=["*"],
         expose_headers=["Mcp-Session-Id", "Mcp-Protocol-Version", "WWW-Authenticate"],
@@ -615,47 +616,54 @@ def _install_health_routes(app) -> None:
 
 
 def main():
-    """Entry point for `pmb-mcp` script.
+    """Entry point for `pmb-mcp` and `lume-mcp` scripts.
 
     Defaults to stdio (per-developer). Set env-vars to expose HTTP for
     team-shared deployments:
 
-      PMB_MCP_TRANSPORT=streamable-http     # or `stdio` (default)
-      PMB_MCP_HOST=0.0.0.0                  # 127.0.0.1 by default
-      PMB_MCP_PORT=8765
-      PMB_MCP_PATH=/mcp                     # mount path
-      PMB_MCP_BEARER_TOKEN=<secret>         # optional shared secret
+      LUME_MCP_TRANSPORT=streamable-http    # or `stdio` (default)
+      LUME_MCP_HOST=0.0.0.0                 # 127.0.0.1 by default
+      LUME_MCP_PORT=8765
+      LUME_MCP_PATH=/mcp                    # mount path
+      LUME_MCP_BEARER_TOKEN=<secret>        # optional shared secret
+
+    Legacy PMB_MCP_* variable aliases continue to be recognized.
 
     On stdio, the agent's host spawns `pmb-mcp` per session. On HTTP, run
     one persistent process (systemd, Docker, etc.) and point every IDE at
     its URL - they share one workspace, one entity graph, one memory.
     """
     import sys
-    workspace_id = os.environ.get("PMB_WORKSPACE")
-    cwd_env = os.environ.get("PMB_CWD")
+
+    from lume.env import env_value, initialize_environment
+
+    initialize_environment()
+
+    workspace_id = env_value("LUME_WORKSPACE")
+    cwd_env = env_value("LUME_CWD")
     cwd = Path(cwd_env) if cwd_env else None
 
-    transport = (os.environ.get("PMB_MCP_TRANSPORT") or "stdio").strip().lower()
+    transport = (env_value("LUME_MCP_TRANSPORT", "stdio") or "stdio").strip().lower()
     if transport in ("http", "https"):
         transport = "streamable-http"
 
     if transport not in ("stdio", "streamable-http"):
         sys.stderr.write(
-            f"[pmb-mcp] unknown PMB_MCP_TRANSPORT={transport!r}. "
+            f"[lume-mcp] unknown MCP transport {transport!r}. "
             f"Use 'stdio' or 'streamable-http'.\n"
         )
         sys.exit(2)
 
-    host = os.environ.get("PMB_MCP_HOST", "127.0.0.1")
+    host = env_value("LUME_MCP_HOST", "127.0.0.1")
     try:
-        port = int(os.environ.get("PMB_MCP_PORT", "8765"))
+        port = int(env_value("LUME_MCP_PORT", "8765"))
     except ValueError:
-        sys.stderr.write("[pmb-mcp] PMB_MCP_PORT must be an integer\n")
+        sys.stderr.write("[lume-mcp] LUME_MCP_PORT must be an integer\n")
         sys.exit(2)
-    path = os.environ.get("PMB_MCP_PATH", "/mcp")
-    token = os.environ.get("PMB_MCP_BEARER_TOKEN", "").strip()
+    path = env_value("LUME_MCP_PATH", "/mcp")
+    token = (env_value("LUME_MCP_BEARER_TOKEN", "") or "").strip()
 
-    # Issue #6 - HTTP singleton: if a healthy PMB server already serves this
+    # Issue #6 - HTTP singleton: if a healthy PMB/Lume server already serves this
     # host:port, don't spawn a SECOND heavy process (model + LanceDB). Point
     # clients at the existing one instead.
     if transport == "streamable-http":
@@ -666,7 +674,7 @@ def main():
             existing = None
         if existing:
             sys.stderr.write(
-                f"[pmb-mcp] already running on http://{host}:{port} "
+                f"[lume-mcp] already running on http://{host}:{port} "
                 f"(pid {existing.get('pid')}). Not starting a second - point "
                 f"clients at the existing URL, or stop it (`pmb mcp status`).\n"
             )

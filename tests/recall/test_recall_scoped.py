@@ -49,3 +49,24 @@ def test_recall_scoped_unknown_project_returns_empty(tmp_pmb_home, tmp_workspace
     res = eng.recall_scoped("Postgres", project="nonexistent", top_k=5)
     assert res.results == []
     assert res.escalation["n_after_filter"] == 0
+
+
+def test_recall_scoped_stable_ids_include_personal_memories(tmp_pmb_home, tmp_workspace_dir):
+    eng = _engine(tmp_workspace_dir, tmp_pmb_home)
+    eng.record_fact("shared color preference for blue", metadata={"scope_type": "personal"})
+    eng.record_fact(
+        "project alpha uses blue database theme",
+        metadata={"project_id": "alpha-id", "area_id": "design"},
+    )
+    eng.record_fact(
+        "project beta uses blue database theme",
+        metadata={"project_id": "beta-id", "area_id": "design"},
+    )
+
+    res = eng.recall_scoped(
+        "blue database theme preference", project_id="alpha-id", area_id="design", top_k=10,
+    )
+    contents = " ".join(result.content for result in res.results)
+    assert "shared color preference" in contents
+    assert "project alpha" in contents
+    assert "project beta" not in contents

@@ -21,10 +21,9 @@ import pmb
 # ── B2: internal routes answer against the warm engine (in-process) ─────────
 
 def _build_daemon_app(cwd, seed_lesson: str | None = None):
-    from starlette.testclient import TestClient
-
     from pmb.mcp.daemon import _register_internal_routes
     from pmb.mcp.server import build_server
+    from starlette.testclient import TestClient
 
     server = build_server(cwd=cwd, prewarm=False)  # no 20s model load in tests
     engine = server._pmb_engine

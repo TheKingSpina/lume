@@ -19,7 +19,6 @@ import time
 from pathlib import Path
 
 import pytest
-
 from pmb.signals.git import DEFAULT_MAX_COMMITS, capture_recent_commits
 
 pytestmark = pytest.mark.skipif(

@@ -8,7 +8,6 @@ that corpus with the same strong bar as the lesson guard, once per session.
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.mcp.daemon import pretool_negatives
 

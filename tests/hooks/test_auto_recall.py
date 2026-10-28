@@ -10,7 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 import pytest
-
 from pmb.hooks.auto_recall import (
     AutoContextResult,
     Intent,

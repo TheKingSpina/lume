@@ -143,7 +143,6 @@ def test_consolidation_stores_fact_and_archives_sources(tmp_pmb_home, tmp_worksp
 
 def test_consolidation_dry_run_does_not_write(tmp_pmb_home, tmp_workspace_dir, monkeypatch):
     import numpy as np
-
     from pmb.core.events import Event
 
     # This test checks write isolation, not the embedder's floating-point
@@ -562,12 +561,11 @@ def test_consolidation_waits_for_last_inflight_embedding(isolated_engine, monkey
 
 
 def test_llm_failure_keeps_sources_and_returns_nonzero_cli(isolated_engine, monkeypatch):
-    from typer.testing import CliRunner
-
     from pmb.cli.commands import maintenance
     from pmb.cli.main import app
     from pmb.core.events import Event
     from pmb.health.consolidate import Cluster
+    from typer.testing import CliRunner
 
     engine = isolated_engine
     events = [engine.events.append(Event(

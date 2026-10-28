@@ -13,7 +13,6 @@ import sqlite3
 import time
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.core.events import Event
 from pmb.reasoning.attributes import detect_negated_state

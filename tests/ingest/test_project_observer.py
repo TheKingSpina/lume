@@ -11,7 +11,6 @@ from __future__ import annotations
 import subprocess
 
 import pytest
-
 from pmb.hooks.project_observer import (
     is_git_repo,
     snapshot_changes,

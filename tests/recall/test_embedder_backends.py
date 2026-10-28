@@ -10,7 +10,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 from pmb.core import search as search_mod
 from pmb.core.search import HybridSearch, _model_dim, _OllamaEmbedAdapter, _OpenAIEmbedAdapter
 

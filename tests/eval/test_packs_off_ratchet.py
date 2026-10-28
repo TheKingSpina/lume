@@ -7,9 +7,8 @@ claim ("no language packs required") on a configuration where the packs are gone
 """
 from __future__ import annotations
 
-import pytest
-
 import pmb.lang as _lang
+import pytest
 from pmb.core.engine import Engine
 
 

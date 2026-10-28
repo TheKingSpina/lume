@@ -9,7 +9,6 @@ from __future__ import annotations
 import tempfile
 
 import pytest
-
 from pmb.health.distill_lessons import _parse_items, distill_lessons
 
 

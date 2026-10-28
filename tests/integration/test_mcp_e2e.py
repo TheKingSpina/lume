@@ -27,7 +27,6 @@ def mcp_env(tmp_path, monkeypatch):
 
 def _client():
     from fastmcp import Client
-
     from pmb.mcp.server import build_server
     return Client(build_server(cwd=None, workspace_id="mcpe2e"))
 

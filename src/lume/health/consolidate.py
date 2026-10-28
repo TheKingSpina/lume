@@ -160,7 +160,12 @@ def openai_chat_completion(
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is not set")
     model_id = model if model and model not in _MODEL_ALIASES else None
-    model_id = model_id or os.environ.get("PMB_OPENAI_MODEL") or DEFAULT_OPENAI_MODEL
+    model_id = (
+        model_id
+        or os.environ.get("LUME_OPENAI_MODEL")
+        or os.environ.get("PMB_OPENAI_MODEL")
+        or DEFAULT_OPENAI_MODEL
+    )
     base_url = (os.environ.get("OPENAI_BASE_URL") or DEFAULT_OPENAI_BASE_URL).rstrip("/")
     payload = {
         "model": model_id,
@@ -252,19 +257,34 @@ class ClaudeCLIClient:
         timeout: float = 120.0,
         extra_args: list[str] | None = None,
     ):
-        self.command = command or os.environ.get("PMB_CLAUDE_CMD") or "claude"
-        self.model = model or os.environ.get("PMB_CLAUDE_MODEL") or DEFAULT_CLAUDE_MODEL
+        self.command = (
+            command
+            or os.environ.get("LUME_CLAUDE_CMD")
+            or os.environ.get("PMB_CLAUDE_CMD")
+            or "claude"
+        )
+        self.model = (
+            model
+            or os.environ.get("LUME_CLAUDE_MODEL")
+            or os.environ.get("PMB_CLAUDE_MODEL")
+            or DEFAULT_CLAUDE_MODEL
+        )
         self.timeout = timeout
         self.extra_args = extra_args or []
 
     @staticmethod
     def available(command: str | None = None) -> bool:
-        """Quick check used by auto-detection. Honors PMB_CLAUDE_CMD env
-        var (which may be an absolute path), then falls back to looking
+        """Quick check used by auto-detection. Honors LUME_CLAUDE_CMD / PMB_CLAUDE_CMD
+        env var (which may be an absolute path), then falls back to looking
         for 'claude' on PATH."""
         import os as _os
         import shutil
-        cmd = command or _os.environ.get("PMB_CLAUDE_CMD") or "claude"
+        cmd = (
+            command
+            or _os.environ.get("LUME_CLAUDE_CMD")
+            or _os.environ.get("PMB_CLAUDE_CMD")
+            or "claude"
+        )
         # Absolute path: just check the file exists and is executable
         if _os.path.isabs(cmd) or "/" in cmd or "\\" in cmd:
             return _os.path.isfile(cmd)
@@ -395,9 +415,15 @@ class OllamaClient:
         if config is None:
             workspace = detect_workspace()
             config = Config(workspace_dir=workspace.storage_dir, pmb_home=workspace.pmb_home)
-        self.model = model or os.environ.get("PMB_OLLAMA_MODEL") or config.get("ollama.model")
+        self.model = (
+            model
+            or os.environ.get("LUME_OLLAMA_MODEL")
+            or os.environ.get("PMB_OLLAMA_MODEL")
+            or config.get("ollama.model")
+        )
         self.base_url = (
             base_url
+            or os.environ.get("LUME_OLLAMA_URL")
             or os.environ.get("PMB_OLLAMA_URL")
             or os.environ.get("OLLAMA_HOST")
             or config.get("ollama.url")

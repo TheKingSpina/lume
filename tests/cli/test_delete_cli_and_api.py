@@ -10,9 +10,8 @@ import threading
 from http.server import ThreadingHTTPServer
 
 from _http import post_json as _post
-from typer.testing import CliRunner
-
 from pmb.cli.main import app
+from typer.testing import CliRunner
 
 runner = CliRunner()
 

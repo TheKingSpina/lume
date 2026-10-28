@@ -12,7 +12,6 @@ import json
 import sqlite3
 
 import pytest
-
 from pmb.core.engine import Engine
 
 

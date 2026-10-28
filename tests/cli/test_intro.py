@@ -10,9 +10,8 @@ from __future__ import annotations
 
 import io
 
-from rich.console import Console
-
 from pmb.cli.intro import _BLOCKS, _BRAIN, _brain_frame, maybe_first_run, play_boot, welcome
+from rich.console import Console
 
 
 def _cap(width: int = 64) -> Console:

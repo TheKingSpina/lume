@@ -8,7 +8,6 @@ import sqlite3
 import time
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.health.adaptive import adaptive_history, apply_adaptive_boost
 from pmb.health.conflicts import (

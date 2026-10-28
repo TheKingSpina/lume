@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.hooks import Intent
 from pmb.hooks.semantic_intent import (

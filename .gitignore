@@ -57,11 +57,14 @@ ehthumbs.db
 *.lnk
 
 # --------------------------------------------------------------
-# PMB runtime data — never commit
+# PMB / Lume runtime data — never commit
 # --------------------------------------------------------------
 .pmb/
 pmb_workspace/
 pmb_home/
+.lume/
+lume_workspace/
+lume_home/
 *.sqlite
 *.sqlite-journal
 *.sqlite-wal

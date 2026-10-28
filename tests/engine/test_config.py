@@ -5,7 +5,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from pmb.config import SCHEMA, Config, _coerce, _flatten, _unflatten
 
 

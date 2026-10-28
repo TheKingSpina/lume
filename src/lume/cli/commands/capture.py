@@ -619,7 +619,7 @@ def _try_daemon_recall(query: str, top_k: int) -> dict | None:
         try:
             ws_id = detect_workspace().id
         except Exception:
-            ws_id = os.environ.get("PMB_WORKSPACE")
+            ws_id = os.environ.get("LUME_WORKSPACE") or os.environ.get("PMB_WORKSPACE")
         host = info.get("host") or "127.0.0.1"
         port = int(info["port"])
         tok = read_daemon_token() or ""

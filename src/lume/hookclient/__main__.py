@@ -93,9 +93,9 @@ def _has(args: list[str], name: str) -> bool:
 
 def _workspace_hint() -> str | None:
     # Cheap, Engine-free workspace signal so the daemon can refuse to serve a
-    # different workspace's memory (S4). PMB_WORKSPACE is the reliable case;
+    # different workspace's memory (S4). LUME_WORKSPACE/PMB_WORKSPACE is the reliable case;
     # otherwise None and the daemon best-effort serves its own.
-    return os.environ.get("PMB_WORKSPACE") or None
+    return os.environ.get("LUME_WORKSPACE") or os.environ.get("PMB_WORKSPACE") or None
 
 
 # ── daemon transport ────────────────────────────────────────────────
@@ -413,7 +413,7 @@ def main(argv: list[str] | None = None) -> int:
     # sub-call. An internal LLM call must leave no memory side effects, so every
     # hook subcommand no-ops here. The flag is set in
     # health.consolidate.ClaudeCLIClient._subprocess_env.
-    if os.environ.get("PMB_INTERNAL_LLM"):
+    if os.environ.get("LUME_INTERNAL_LLM") or os.environ.get("PMB_INTERNAL_LLM"):
         return 0
     # Windows consoles default to cp1252; a lesson with an emoji or Cyrillic would
     # crash sys.stdout.write and the hook would silently emit nothing. Force UTF-8

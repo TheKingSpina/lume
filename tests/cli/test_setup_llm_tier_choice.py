@@ -5,10 +5,9 @@ from __future__ import annotations
 
 import io
 
-from rich.console import Console
-
 from pmb.cli.commands.manage import _LLM_TIER_PROFILES, _choose_llm_tier
 from pmb.config import SCHEMA, Config
+from rich.console import Console
 
 
 def _con():

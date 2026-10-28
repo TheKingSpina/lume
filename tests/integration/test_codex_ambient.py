@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 
 import pytest
-
 from pmb.core.ambient_log import is_significant_action
 from pmb.hooks.codex_rollout import (
     find_latest_rollout,

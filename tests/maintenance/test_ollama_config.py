@@ -6,12 +6,11 @@ import json
 from unittest.mock import patch
 
 import pytest
-from typer.testing import CliRunner
-
 from pmb.cli.main import app
 from pmb.config import Config
 from pmb.core.workspace import detect_workspace
 from pmb.health.consolidate import ClaudeCLIClient, OllamaClient, resolve_llm_client
+from typer.testing import CliRunner
 
 
 @pytest.fixture

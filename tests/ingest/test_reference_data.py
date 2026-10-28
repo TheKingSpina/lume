@@ -6,9 +6,8 @@ warning + defaults, never a crash.
 """
 from __future__ import annotations
 
-import pytest
-
 import pmb.reference_data as rd
+import pytest
 
 
 @pytest.fixture(autouse=True)

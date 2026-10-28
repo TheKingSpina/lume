@@ -25,7 +25,11 @@ import os
 # Even when a tool is HIDDEN from the agent, you can still call it via the CLI
 # (`pmb consolidate`, `pmb dedupe`, …) and re-expose it with a wider profile.
 
-_TOOL_PROFILE = (os.environ.get("PMB_TOOL_PROFILE") or "minimal").lower().strip()
+_TOOL_PROFILE = (
+    os.environ.get("LUME_TOOL_PROFILE")
+    or os.environ.get("PMB_TOOL_PROFILE")
+    or "minimal"
+).lower().strip()
 
 # THE DEFAULT SURFACE (core-10): the smallest set that still runs the whole
 # memory loop - read-first (prepare / recall / project_overview), the lesson

@@ -101,7 +101,13 @@ class AgentLoop:
                 return "openai"
             # Last fallback: Ollama, if a server responds
             from lume.health.consolidate import OllamaClient
-            if OllamaClient.ping(self.config.ollama_url or os.environ.get("PMB_OLLAMA_URL") or os.environ.get("OLLAMA_HOST") or "http://localhost:11434"):
+            if OllamaClient.ping(
+                self.config.ollama_url
+                or os.environ.get("LUME_OLLAMA_URL")
+                or os.environ.get("PMB_OLLAMA_URL")
+                or os.environ.get("OLLAMA_HOST")
+                or "http://localhost:11434"
+            ):
                 return "ollama"
             return "anthropic"  # will error on call if no key; caller sees clear msg
         return t
@@ -142,6 +148,7 @@ class AgentLoop:
 
         base = (
             self.config.ollama_url
+            or os.environ.get("LUME_OLLAMA_URL")
             or os.environ.get("PMB_OLLAMA_URL")
             or os.environ.get("OLLAMA_HOST")
             or "http://localhost:11434"
@@ -149,7 +156,7 @@ class AgentLoop:
         model = (
             self.config.model
             if self.config.model not in ("haiku", "sonnet", "opus")
-            else os.environ.get("PMB_OLLAMA_MODEL") or "llama3.1:8b"
+            else os.environ.get("LUME_OLLAMA_MODEL") or os.environ.get("PMB_OLLAMA_MODEL") or "llama3.1:8b"
         )
         # Flatten our messages list (which may contain content blocks) to plain text
         flat: list[dict] = []

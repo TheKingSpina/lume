@@ -5,7 +5,6 @@ import json
 import time
 
 import numpy as np
-
 from pmb.core.engine import Engine
 from pmb.reasoning.predictive import (
     CacheEntry,

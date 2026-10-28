@@ -29,7 +29,7 @@ from starlette.routing import Route
 from starlette.testclient import TestClient
 
 TOKEN = "s3cr3t-bearer-token-xyz"
-TRUSTED_ORIGIN = "https://amadeus.nyarchlinux.moe"
+TRUSTED_ORIGIN = "https://agent.example.com"
 
 
 def _app(token: str) -> Starlette:

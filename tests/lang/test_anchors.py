@@ -8,7 +8,6 @@ wins at the default tau.
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 
 

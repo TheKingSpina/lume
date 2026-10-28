@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-title: PMB - Personal Memory Brain
+title: Lume - Persistent Memory for AI Agents
 message: >-
-  If you use PMB in published research or build on top of it,
+  If you use Lume in published research or build on top of it,
   please cite this software.
 type: software
 authors:
-  - name: PMB contributors
-repository-code: https://github.com/oleksiijko/pmb
+  - name: Lume contributors
+repository-code: https://github.com/TheKingSpina/lume
 abstract: >-
   Local-first persistent memory for AI coding agents over MCP.
   Hybrid BM25+vector retrieval with SQLite + LanceDB storage.

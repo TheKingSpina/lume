@@ -89,9 +89,8 @@ def test_detect_installed_agents_finds_cursor_project(tmp_path, monkeypatch):
 
 
 def test_setup_help_runs():
-    from typer.testing import CliRunner
-
     from pmb.cli.main import app
+    from typer.testing import CliRunner
     r = CliRunner().invoke(app, ["setup", "--help"])
     assert r.exit_code == 0
     assert "Guided first-time setup" in r.output
@@ -143,9 +142,8 @@ def test_active_mode_and_overview_config_keys():
 
 
 def test_overview_help_runs():
-    from typer.testing import CliRunner
-
     from pmb.cli.main import app
+    from typer.testing import CliRunner
     r = CliRunner().invoke(app, ["overview", "--help"])
     assert r.exit_code == 0
     assert "overview" in r.output.lower()

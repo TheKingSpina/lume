@@ -17,7 +17,6 @@ Pure SQL + template, no model.
 from __future__ import annotations
 
 import pytest
-
 from pmb.hooks.autowrite import (
     autowrite_gate,
     run_autowrite,

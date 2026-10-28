@@ -4,7 +4,6 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 import pytest
-
 from pmb.core.engine import Engine
 from pmb.reasoning.temporal import (
     extract_event_time,

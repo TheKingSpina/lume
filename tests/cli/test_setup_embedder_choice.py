@@ -5,10 +5,9 @@ from __future__ import annotations
 
 import io
 
-from rich.console import Console
-
 from pmb.cli.commands.manage import _EMBEDDER_PROFILES, _choose_embedder
 from pmb.config import Config
+from rich.console import Console
 
 DEFAULT = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 

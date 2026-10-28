@@ -6,7 +6,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from pmb.graph.expansion import _cache_path, expand_query
 
 

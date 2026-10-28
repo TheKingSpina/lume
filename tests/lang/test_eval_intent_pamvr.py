@@ -14,7 +14,6 @@ delta the plan asks for). Complements V1's end-to-end recall floors.
 from __future__ import annotations
 
 import pytest
-
 from pmb.hooks.auto_recall import detect_intents
 from pmb.reasoning.pamvr import apply_pamvr
 

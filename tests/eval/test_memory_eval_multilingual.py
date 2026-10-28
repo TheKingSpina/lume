@@ -15,7 +15,6 @@ embedder is weak there (PLAN risk #1), so top-1 is informational, not a floor.
 from __future__ import annotations
 
 import pytest
-
 from pmb.core.engine import Engine
 
 # ── frozen multilingual corpus: (lang, text) — index is the stable id ─────────

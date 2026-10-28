@@ -224,7 +224,11 @@ def make_timing_wrapper(db_path: Path, workspace_id: str | None):
     # already elapsed means the client gave up - flag it, don't count it as a
     # clean success (#11).
     try:
-        _client_to_ms = float(os.environ.get("PMB_MCP_CLIENT_TIMEOUT_MS") or 120000)
+        _client_to_ms = float(
+            os.environ.get("LUME_MCP_CLIENT_TIMEOUT_MS")
+            or os.environ.get("PMB_MCP_CLIENT_TIMEOUT_MS")
+            or 120000
+        )
     except Exception:
         _client_to_ms = 120000.0
 

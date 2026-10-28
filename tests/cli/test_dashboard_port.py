@@ -3,10 +3,9 @@ from __future__ import annotations
 import socket
 from unittest.mock import patch
 
-from typer.testing import CliRunner
-
 from pmb.cli.commands.capture import _dashboard_port_or_next
 from pmb.cli.main import app
+from typer.testing import CliRunner
 
 
 def test_dashboard_port_or_next_skips_busy_default_port():

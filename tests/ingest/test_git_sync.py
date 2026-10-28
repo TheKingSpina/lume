@@ -11,7 +11,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from pmb.core.git_sync import WorkspaceGitSync, clone_workspace
 
 pytestmark = pytest.mark.skipif(
