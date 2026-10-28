@@ -28,6 +28,14 @@ x-lume-common: &lume-common
     LUME_MCP_CORS_ORIGINS: ${LUME_MCP_CORS_ORIGINS:-}
     HF_HOME: /hf-cache
     SENTENCE_TRANSFORMERS_HOME: /hf-cache
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+    LUME_OPENAI_MODEL: ${LUME_OPENAI_MODEL:-${PMB_OPENAI_MODEL:-}}
+    PMB_OPENAI_MODEL: ${PMB_OPENAI_MODEL:-${LUME_OPENAI_MODEL:-}}
+    LUME_TOOL_PROFILE: ${LUME_TOOL_PROFILE:-${PMB_TOOL_PROFILE:-}}
+    PMB_TOOL_PROFILE: ${PMB_TOOL_PROFILE:-${LUME_TOOL_PROFILE:-}}
+    ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    OLLAMA_HOST: ${OLLAMA_HOST:-}
   volumes:
     - ./docker/data:/data        # LUME_HOME / legacy PMB_HOME — workspace data
     - pmb_hf_cache:/hf-cache      # embedding models (downloaded once)
